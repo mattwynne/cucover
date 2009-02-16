@@ -1,3 +1,3 @@
 # Cucover
 
-Coverage aware Cucumber features runner
+Coverage aware [Cucumber](http://github.com/aslakhellesoy/cucumber/tree/master) features runner.
