@@ -7,7 +7,7 @@ When /^I run cucover features$/ do
   end
 end
 
-Then /^I it should pass with$/ do |expected_text|
+Then /^it should pass with$/ do |expected_text|
   @status.should == 0
   @out.should == expected_text
 end

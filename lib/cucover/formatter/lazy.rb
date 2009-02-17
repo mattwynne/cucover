@@ -3,11 +3,6 @@ require 'rcov'
 
 module Cucover
   module Formatter
-    # This formatter prints features to plain text - exactly how they were parsed,
-    # just prettier. That means with proper indentation and alignment of table columns.
-    #
-    # If the output is STDOUT (and not a file), there are bright colours to watch too.
-    #
     class Lazy < Cucumber::Ast::Visitor
 
       def initialize(step_mother, io, options)
