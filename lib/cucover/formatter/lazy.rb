@@ -1,4 +1,5 @@
 require 'cucumber'
+require 'rcov'
 
 module Cucover
   module Formatter
@@ -13,6 +14,7 @@ module Cucover
         super(step_mother)
         @io = io
         @options = options
+        @analyzer = Rcov::CodeCoverageAnalyzer.new
       end
 
       def visit_features(features)
@@ -23,11 +25,27 @@ module Cucover
       end
 
       def visit_feature(feature)
-        super
+        @analyzer.run_hooked do
+          super
+        end
         @io.puts feature.file
+        analyzed_files.each do |f|
+          @io.puts "  #{f}"
+        end
       end
       
       private 
+      
+      def analyzed_files
+        interesting_files = @analyzer.analyzed_files.map{ |f| File.expand_path(f) }.reject{ |f| boring?(f) }
+        interesting_files.map do |file|
+          file.gsub(/^#{Dir.pwd}\//, '')
+        end
+      end
+      
+      def boring?(file)
+        file.match /gem/
+      end
       
       def print_counts(features)
         @io.puts dump_count(features.scenarios.length, "scenario")
