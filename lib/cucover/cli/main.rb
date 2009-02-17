@@ -1,12 +1,20 @@
 require 'cucover'
+require 'cucover/formatter/lazy'
 require 'cucumber'
 
 module Cucover
   module Cli
+    
+    module MyConfiguration
+      def build_formatter_broadcaster(step_mother)
+        Cucover::Formatter::Lazy.new(step_mother, STDOUT, {})
+      end
+    end
+    
     class Main < Cucumber::Cli::Main
       class << self
         def execute(args)
-          new(['features', '--format', 'Cucover::Formatter::Lazy', '--require', Cucover::LIB + '/formatter/lazy']).execute!(@step_mother)
+          new(args).execute!(@step_mother)
         end
       end
       
@@ -24,6 +32,10 @@ module Cucover
       
         failure = features.steps[:failed].any? || (configuration.strict? && features.steps[:undefined].length)
         Kernel.exit(failure ? 1 : 0)
+      end
+      
+      def configuration
+        super.extend(MyConfiguration)
       end
       
     end
