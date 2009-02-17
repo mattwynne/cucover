@@ -8,7 +8,10 @@ Feature: Run
     Then I it should pass with
       """
       features/call_foo.feature
+        lib/foo.rb
       features/call_foo_and_bar.feature
+        lib/bar.rb
+        lib/foo.rb
       
       2 scenarios
       3 passed steps
