@@ -85,13 +85,11 @@ module Cucover
       
       def analyzed_files
         interesting_files = @analyzer.analyzed_files.map{ |f| File.expand_path(f) }.reject{ |f| boring?(f) }
-        interesting_files.map do |file|
-          file.gsub(/^#{Dir.pwd}\//, '')
-        end
+        interesting_files.map{ |file| file.gsub(/^#{Dir.pwd}\//, '') }.sort
       end
       
       def boring?(file)
-        file.match /gem/
+        (file.match /gem/) || (file.match /vendor/) || (file.match /lib\/ruby/)
       end
       
       def print_counts(features)
