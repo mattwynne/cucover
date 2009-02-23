@@ -29,7 +29,6 @@ module Cucover
       
       def visit_features(features)
         @io.puts
-        @io.puts
         @io.puts "Coverage"
         @io.puts "--------"
         @io.puts
@@ -47,22 +46,25 @@ module Cucover
     
     class Lazy < Cucumber::Ast::Visitor
 
-      def initialize(step_mother, io, options)
+      def initialize(step_mother, io, cucumber_options)
         super(step_mother)
-        @io = io
-        @options = options
+        @io = io.extend(LooksLikeTerminal)
+        @options = cucumber_options # needed for subclass
         @analyzer = Rcov::CodeCoverageAnalyzer.new
-        @pretty_io = StringIO.new.extend(LooksLikeTerminal)
-        @pretty_formatter = Cucumber::Formatter::Pretty.new(step_mother, @pretty_io, @options)
+        
+        @rerun_io = StringIO.new
+        @rerun = Cucumber::Formatter::Rerun.new(@step_mother, @rerun_io, @options)
       end
 
       def visit_features(features)
         features.extend(FeaturesExtensions)
         super
+        @rerun.visit_features(features)
         
         CoverageReporter.new(@io).visit_features(features)
-
+        
         print_counts(features)
+        report_errors(features)
         @io.puts
       end
 
@@ -72,20 +74,14 @@ module Cucover
           super
         end
         feature.analyzed_files = analyzed_files
-        
-        @pretty_formatter.visit_feature(feature)
-        feature.last_run = @pretty_io.string
-        @pretty_io.string == ""
-        @io.puts feature.last_run
-        @io.puts
-        
       end
       
       private 
       
       def analyzed_files
-        interesting_files = @analyzer.analyzed_files.map{ |f| File.expand_path(f) }.reject{ |f| boring?(f) }
-        interesting_files.map{ |file| file.gsub(/^#{Dir.pwd}\//, '') }.sort
+        normalized_files = @analyzer.analyzed_files.map{ |f| File.expand_path(f).gsub(/^#{Dir.pwd}\//, '') }
+        interesting_files = normalized_files.reject{ |f| boring?(f) }
+        interesting_files.sort
       end
       
       def boring?(file)
@@ -99,9 +95,14 @@ module Cucover
           if features.steps[status].any?
             count_string = dump_count(features.steps[status].length, "step", status.to_s)
             @io.puts count_string
-            @io.flush
+              @io.flush
           end
         end
+      end
+      
+      def report_errors(features)
+        @io.puts
+        @io.puts @rerun_io.string
       end
       
       def dump_count(count, what, state=nil)

@@ -15,7 +15,7 @@ module Cucover
       class << self
         def execute(args)
           new(args).execute!(@step_mother)
-        end
+          end
       end
       
       def configuration
