@@ -4,8 +4,9 @@ Feature: Run
   I want to be able to run features and get useful feedback through cucover
   
   Scenario: Run features, minimal output
+    Given the cache is clear
     When I run cucover features/call_foo.feature features/call_foo_and_bar.feature
-    Then it should pass with
+    Then it should pass with:
       """
 
       Coverage
@@ -21,6 +22,5 @@ Feature: Run
 
       2 scenarios
       3 passed steps
-
       
       """

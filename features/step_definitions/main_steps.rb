@@ -1,13 +1,33 @@
-When /^I run cucover (.*)$/ do |args|
+def within_examples_dir
   full_dir = File.expand_path(File.dirname(__FILE__) + "/../../examples/self_test")
   Dir.chdir(full_dir) do
+    yield
+  end
+end
+
+Given /^I have run cucover (.*)$/ do |args|
+  When %{I run cucover "#{args}"}
+end
+
+Given /^the cache is clear$/ do
+  `find examples -name .coverage | xargs rm -rf`
+end
+
+When /^I run cucover (.*)$/ do |args|
+  within_examples_dir do
     full_cmd = "#{Cucover::RUBY_BINARY} #{Cucover::BINARY} #{args}"
     @out = `#{full_cmd}`
     @status = $?.exitstatus
   end
 end
 
-Then /^it should (pass|fail) with$/ do |expected_status, expected_text|
+When /^I edit the source file (.*)$/ do |source_file|
+  within_examples_dir do
+    FileUtils.touch(source_file)
+  end
+end
+
+Then /^it should (pass|fail) with:$/ do |expected_status, expected_text|
   expected_status_code = expected_status == "pass" ? 0 : 1
   
   unless @status == expected_status_code
@@ -15,4 +35,14 @@ Then /^it should (pass|fail) with$/ do |expected_status, expected_text|
   end
   
   @out.should == expected_text
+end
+
+Then /^it should pass with no response$/ do
+  unless @status == 0
+    raise "Expected pass but return code was #{@status}: #{@out}"
+  end
+  
+  unless @out.blank?
+    raise "Expected blank output but was:\n#{@out}"
+  end
 end

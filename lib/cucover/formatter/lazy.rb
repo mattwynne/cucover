@@ -1,17 +1,99 @@
 require 'cucumber'
 require 'rcov'
+require 'cucover/formatter/lazy/coverage_reporter'
 
 module Cucover
   
   module FeaturesExtensions
-    def run_logs
-      @features.map{ |f| f.last_run }
-    end    
+    def source_files
+      result = []
+      @features.each do |f|
+        result << f.source_files 
+      end
+      result.flatten
+    end
+  end
+
+  class SourceFileCache
+    def initialize(feature_file)
+      @feature_file = feature_file
+    end
+    
+    def save(analyzed_files)
+      FileUtils.mkdir_p File.dirname(cache_filename)
+      File.open(cache_filename, "w") do |file|
+        file.puts analyzed_files
+      end
+    end
+    
+    def exists?
+      File.exist?(cache_filename)
+    end
+    
+    def dirty_files
+      source_files.select do |source_file|
+        File.mtime(Dir.pwd + '/' + source_file.strip) > time
+      end
+    end
+    
+    private
+    
+    def source_files
+      result = []
+      File.open(cache_filename, "r") do |file|
+        file.each_line do |line|
+          result.push line
+        end
+      end
+      result
+    end
+    
+    def time
+      File.mtime(cache_filename)
+    end
+
+    def cache_filename
+      @feature_file.gsub /([^\/]*\.feature)/, '.coverage/\1'
+    end
   end
   
   module FeatureExtensions
-    attr_accessor :last_run
-    attr_accessor :analyzed_files
+    def dirty?
+      return true unless source_files_cache.exists?
+      not source_files_cache.dirty_files.empty?
+    end
+    
+    def accept(visitor)
+      return unless dirty?
+      analyzer.run_hooked do
+        super
+      end
+      source_files_cache.save analyzed_files
+    end
+    
+    def source_files
+      analyzed_files
+    end
+    
+    private
+    
+    def source_files_cache
+      @source_files_cache ||= SourceFileCache.new(self.file)
+    end
+
+    def analyzed_files
+      normalized_files = analyzer.analyzed_files.map{ |f| File.expand_path(f).gsub(/^#{Dir.pwd}\//, '') }
+      interesting_files = normalized_files.reject{ |f| boring?(f) }
+      interesting_files.sort
+    end
+    
+    def boring?(file)
+      (file.match /gem/) || (file.match /vendor/) || (file.match /lib\/ruby/)
+    end
+    
+    def analyzer
+      @analyzer ||= Rcov::CodeCoverageAnalyzer.new      
+    end
   end
   
   module LooksLikeTerminal
@@ -22,35 +104,12 @@ module Cucover
   
   module Formatter
     
-    class CoverageReporter
-      def initialize(io)
-        @io = io
-      end
-      
-      def visit_features(features)
-        @io.puts
-        @io.puts "Coverage"
-        @io.puts "--------"
-        @io.puts
-        features.accept(self)
-        @io.puts
-      end
-      
-      def visit_feature(feature)
-        @io.puts feature.file
-        feature.analyzed_files.each do |f|
-          @io.puts "  #{f}"
-        end
-      end
-    end
-    
     class Lazy < Cucumber::Ast::Visitor
 
       def initialize(step_mother, io, cucumber_options)
         super(step_mother)
         @io = io.extend(LooksLikeTerminal)
-        @options = cucumber_options # needed for subclass
-        @analyzer = Rcov::CodeCoverageAnalyzer.new
+        @options = cucumber_options # needed for base class
         
         @rerun_io = StringIO.new
         @rerun = Cucumber::Formatter::Rerun.new(@step_mother, @rerun_io, @options)
@@ -65,30 +124,17 @@ module Cucover
         
         print_counts(features)
         report_errors(features)
-        @io.puts
       end
 
       def visit_feature(feature)
         feature.extend(FeatureExtensions)
-        @analyzer.run_hooked do
-          super
-        end
-        feature.analyzed_files = analyzed_files
+        super if feature.dirty?
       end
       
       private 
       
-      def analyzed_files
-        normalized_files = @analyzer.analyzed_files.map{ |f| File.expand_path(f).gsub(/^#{Dir.pwd}\//, '') }
-        interesting_files = normalized_files.reject{ |f| boring?(f) }
-        interesting_files.sort
-      end
-      
-      def boring?(file)
-        (file.match /gem/) || (file.match /vendor/) || (file.match /lib\/ruby/)
-      end
-      
       def print_counts(features)
+        return if features.steps.empty?
         @io.puts dump_count(features.scenarios.length, "scenario")
 
         [:failed, :skipped, :undefined, :pending, :passed].each do |status|
@@ -101,7 +147,8 @@ module Cucover
       end
       
       def report_errors(features)
-        @io.puts
+        return if @rerun_io.string.strip.blank?
+        @io.puts 
         @io.puts @rerun_io.string
       end
       
