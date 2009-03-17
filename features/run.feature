@@ -9,19 +9,13 @@ Feature: Run
     Then it should pass with:
       """
       Feature: Call Foo
-        In order to get foo done
-        As a test app
-        I want to do the foo
 
-        Scenario: Call Foo # features/call_foo.feature:6
+        Scenario: Call Foo # features/call_foo.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:4
 
       Feature: Call Foo and Bar
-        In order to get foo and bar done
-        As a test app
-        I want to do the foo and the bar together
 
-        Scenario: Call Foo # features/call_foo_and_bar.feature:6
+        Scenario: Call Foo # features/call_foo_and_bar.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:4
           And I call Bar   # features/step_definitions/main_steps.rb:8
 

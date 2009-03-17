@@ -28,6 +28,10 @@ module Cucover
       end
     end
     
+    def time
+      File.mtime(cache_filename)
+    end
+
     private
     
     def source_files
@@ -40,10 +44,6 @@ module Cucover
       result
     end
     
-    def time
-      File.mtime(cache_filename)
-    end
-
     def cache_filename
       @feature_file.gsub /([^\/]*\.feature)/, '.coverage/\1'
     end
@@ -63,6 +63,7 @@ module Cucover
     
     def dirty?
       return true unless source_files_cache.exists?
+      return true if File.mtime(@file) >= source_files_cache.time
       not source_files_cache.dirty_files.empty?
     end
 

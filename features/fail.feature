@@ -9,11 +9,8 @@ Feature: Fail
     Then it should fail with:
       """
       Feature: Call Foo
-        In order to get foo done
-        As a test app
-        I want to do the foo
       
-        Scenario: Call Foo # features/call_foo.feature:6
+        Scenario: Call Foo # features/call_foo.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:4
       
       Feature: Epic Fail

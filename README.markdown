@@ -1,3 +1,15 @@
 # Cucover
 
-Coverage aware [Cucumber](http://github.com/aslakhellesoy/cucumber/tree/master) features runner.
+Cucover is a thin wrapper for [Cucumber](http://github.com/aslakhellesoy/cucumber/tree/master) which makes it lazy.
+
+What does it mean for Cucumber to be lazy? It will only run a feature if it needs to.
+
+How does it decide whether it needs to run a feature? Every time you run a feature using Cucover, it watches the code in 
+your application that is executed, and remembers. The next time you run Cucover, it skips a feature if the source files (or the feature itself)
+have not been changed since it was last run.
+
+## Limitations
+
+  * Cucover uses RCov to watch the code executed by each feature. RCov does not report ERB view templates, so rails views that are touched will
+not cause their features to be re-run.
+  * This is very new and experimental. There may be bugs. Feedback is welcome via github messages.

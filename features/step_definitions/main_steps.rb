@@ -37,13 +37,3 @@ Then /^it should (pass|fail) with:$/ do |expected_status, expected_text|
   
   @out.should == expected_text
 end
-
-Then /^it should pass with no response$/ do
-  unless @status == 0
-    raise "Expected pass but return code was #{@status}: #{@out}"
-  end
-  
-  unless @out.blank?
-    raise "Expected blank output but was:\n#{@out}"
-  end
-end

@@ -14,18 +14,30 @@ Feature: Lazy Run
       0 scenarios
       
       """
+      
+  Scenario: Run again if feature file touched
+    When I edit the source file features/call_foo.feature
+    And I run cucover features/call_foo.feature
+    Then it should pass with:
+      """
+      Feature: Call Foo
 
+        Scenario: Call Foo # features/call_foo.feature:3
+          When I call Foo  # features/step_definitions/main_steps.rb:4
+
+      1 scenario
+      1 passed step
+      
+      """
+  
   Scenario: Run run only one feature second time if source file touched
     When I edit the source file lib/bar.rb
     And I run cucover features/*foo*.feature
     Then it should pass with:
       """
       Feature: Call Foo and Bar
-        In order to get foo and bar done
-        As a test app
-        I want to do the foo and the bar together
 
-        Scenario: Call Foo # features/call_foo_and_bar.feature:6
+        Scenario: Call Foo # features/call_foo_and_bar.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:4
           And I call Bar   # features/step_definitions/main_steps.rb:8
 
