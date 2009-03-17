@@ -1,3 +1,3 @@
-require File.dirname(__FILE__) + '/../../lib/cucover'
+# require File.dirname(__FILE__) + '/../../lib/cucover'
 require 'spec'
 

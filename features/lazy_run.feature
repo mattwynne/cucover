@@ -9,24 +9,27 @@ Feature: Lazy Run
   
   Scenario: Run nothing second time if nothing to do
     When I run cucover features/call_foo.feature
-    Then it should pass with no response
+    Then it should pass with:
+      """
+      0 scenarios
+      
+      """
 
   Scenario: Run run only one feature second time if source file touched
     When I edit the source file lib/bar.rb
     And I run cucover features/*foo*.feature
     Then it should pass with:
       """
-      
-      Coverage
-      --------
-      
-      features/call_foo.feature
-      features/call_foo_and_bar.feature
-        features/step_definitions/main_steps.rb
-        lib/bar.rb
-        lib/foo.rb
-  
+      Feature: Call Foo and Bar
+        In order to get foo and bar done
+        As a test app
+        I want to do the foo and the bar together
+
+        Scenario: Call Foo # features/call_foo_and_bar.feature:6
+          When I call Foo  # features/step_definitions/main_steps.rb:4
+          And I call Bar   # features/step_definitions/main_steps.rb:8
+
       1 scenario
       2 passed steps
-  
+      
       """

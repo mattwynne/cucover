@@ -14,8 +14,9 @@ Given /^the cache is clear$/ do
 end
 
 When /^I run cucover (.*)$/ do |args|
+  cucover_binary = File.expand_path(File.dirname(__FILE__) + '../../../bin/cucover')
   within_examples_dir do
-    full_cmd = "#{Cucover::RUBY_BINARY} #{Cucover::BINARY} #{args}"
+    full_cmd = "#{Cucumber::RUBY_BINARY} #{cucover_binary} #{args}"
     @out = `#{full_cmd}`
     @status = $?.exitstatus
   end
