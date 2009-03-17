@@ -8,6 +8,13 @@ How does it decide whether it needs to run a feature? Every time you run a featu
 your application that is executed, and remembers. The next time you run Cucover, it skips a feature if the source files (or the feature itself)
 have not been changed since it was last run.
 
+## Installation and Usage
+
+There's no gem for now, so just clone the code from github.
+
+To run your features lazily, just use the cucover binary instead of cucumber. Use the same ommand-line options as usual, they are all passed 
+directly to cucumber. No magic to see here.
+
 ## Limitations
 
   * Cucover uses RCov to watch the code executed by each feature. RCov does not report ERB view templates, so rails views that are touched will
