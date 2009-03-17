@@ -21,3 +21,7 @@ directly to cucumber. No magic to see here.
 not cause their features to be re-run.
   * Anything that runs out of process will not be covered, and therefore cannot trigger a re-run.
   * This is very new and experimental. There may be bugs. Feedback is welcome via github messages.
+  
+# TODO
+
+  * Re-run if a feature failed
