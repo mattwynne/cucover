@@ -19,4 +19,5 @@ directly to cucumber. No magic to see here.
 
   * Cucover uses RCov to watch the code executed by each feature. RCov does not report ERB view templates, so rails views that are touched will
 not cause their features to be re-run.
+  * Anything that runs out of process will not be covered, and therefore cannot trigger a re-run.
   * This is very new and experimental. There may be bugs. Feedback is welcome via github messages.
