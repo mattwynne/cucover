@@ -16,6 +16,6 @@ Gem::Specification.new do |s|
   s.rubyforge_project = 'cucover'
   s.rubygems_version  = '1.3.1'
 
-  s.add_dependency 'cucumber', '>= 0.2'
-  s.add_dependency 'rcov',     '>= 0.8.1.5'
+  # s.add_dependency 'cucumber', '>= 0.2'
+  # s.add_dependency 'rcov',     '>= 0.8.1.5'
 end
