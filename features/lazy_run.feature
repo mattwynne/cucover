@@ -5,6 +5,7 @@ Feature: Lazy Run
   
   Background:
     Given the cache is clear
+    And I am using the simple example app
     And I have run cucover features/call_foo.feature
   
   Scenario: Run nothing second time if nothing to do

@@ -17,3 +17,7 @@ To run your features lazily, just use the cucover binary instead of cucumber. Us
   * Cucover uses RCov to watch the code executed by each feature. RCov does not report ERB view templates so Rails views, for example, that are touched will not cause any features to be re-run.
   * Anything that runs out of process will not be covered, and therefore cannot trigger a re-run, so if you use Cucumber to drive Selenium, for example, you're out of luck.
   * This is very new and experimental. There may be bugs. Feedback is welcome via github messages.
+
+# TODO
+  * lazy run feature seems to fail intermittently - why?
+  * complete new feature to trigger lazy runs when rails views change

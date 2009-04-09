@@ -1,5 +1,9 @@
+def example_app
+  @example_app || raise("Please call the step 'Given I am using the .... example app' so I know which example app to run these features in.")
+end
+
 def within_examples_dir
-  full_dir = File.expand_path(File.dirname(__FILE__) + "/../../examples/self_test")
+  full_dir = File.expand_path(File.dirname(__FILE__) + "/../../examples/self_test/#{example_app}")
   Dir.chdir(full_dir) do
     yield
   end
@@ -12,6 +16,11 @@ end
 Given /^the cache is clear$/ do
   `find examples -name .coverage | xargs rm -rf`
 end
+
+Given /^I am using the (.*) example app$/ do |app_name|
+  @example_app = app_name
+end
+
 
 When /^I run cucover (.*)$/ do |args|
   cucover_binary = File.expand_path(File.dirname(__FILE__) + '../../../bin/cucover')

@@ -5,6 +5,7 @@ Feature: Fail
   
   Scenario: Two features, one fails
     Given the cache is clear
+    And I am using the simple example app
     When I run cucover features/call_foo.feature features/fail.feature
     Then it should fail with:
       """
