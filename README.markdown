@@ -20,8 +20,11 @@ Something like this, as I haven't figured out the dependencies yet for the gem:
 
 To run your features lazily, just use the cucover binary instead of cucumber. Use the same command-line options as usual, they are all passed directly to cucumber. No magic to see here, just a little gentle duck-punching.
 
-## Limitations / Issues / Todo
+## Limitations
 
   * Anything that runs out of process will not be covered, and therefore cannot trigger a re-run, so if you use Cucumber to drive Selenium, for example, you're out of luck.
   * This is very new and experimental. There may be bugs. Feedback is welcome via github messages.
+  
+## Todo
   * The features for cucuover itself seem to flicker (intermittently fail). This is probably due to timing issues when figuring out if a file is dirty.
+  * Consider making failing features run-run even when they're not dirty, just for the good old re-bar feel
