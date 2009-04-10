@@ -24,7 +24,25 @@ To run your features lazily, just use the cucover binary instead of cucumber. Us
 
   * Anything that runs out of process will not be covered, and therefore cannot trigger a re-run, so if you use Cucumber to drive Selenium, for example, you're out of luck.
   * This is very new and experimental. There may be bugs. Feedback is welcome via github messages.
-  
+
 ## Todo
   * The features for cucuover itself seem to flicker (intermittently fail). This is probably due to timing issues when figuring out if a file is dirty.
   * Consider making failing features run-run even when they're not dirty, just for the good old re-bar feel
+    
+## Similar 'Selective Testing' Tools
+
+  * JTestMe
+    * http://xircles.codehaus.org/projects/jtestme 
+    * [Agile2008 conference submission](http://submissions.agile2008.org/node/3435)
+  * Infinitest
+    * http://code.google.com/p/infinitest/ 
+    * Contact: [Ben Rady](http://submissions.agile2008.org/node/377)
+  * Google Testar
+    * http://code.google.com/p/google-testar/
+    * Contact: Misha Dmitriev
+  * Clover test optimization
+    * http://www.atlassian.com/software/clover/features/optimization.jsp
+  * JUnitMax
+    * a selective testing tool by [Kent Beck](http://www.threeriversinstitute.org/blog)
+    * http://junitmax.com/
+
