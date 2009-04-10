@@ -8,7 +8,7 @@ Feature: Lazy Run
     And I am using the simple example app
     And I have run cucover features/call_foo.feature
   
-  Scenario: Run nothing second time if nothing to do
+  Scenario: Change nothing and run cucover again
     When I run cucover features/call_foo.feature
     Then it should pass with:
       """
@@ -16,7 +16,7 @@ Feature: Lazy Run
       
       """
       
-  Scenario: Run again if feature file touched
+  Scenario: Touch feature file and run cucover again
     When I edit the source file features/call_foo.feature
     And I run cucover features/call_foo.feature
     Then it should pass with:
@@ -31,7 +31,7 @@ Feature: Lazy Run
       
       """
   
-  Scenario: Run run only one feature second time if source file touched
+  Scenario: Touch one source file and cucover against lots of features
     When I edit the source file lib/bar.rb
     And I run cucover features/*foo*.feature
     Then it should pass with:

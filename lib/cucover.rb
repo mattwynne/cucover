@@ -6,6 +6,15 @@ require 'rcov'
 
 module Cucover
   
+  class << self
+    def record(file)
+      additional_covered_files << file
+    end
+    def additional_covered_files
+      @additional_covered_files ||= []
+    end
+  end
+  
   class SourceFileCache
     def initialize(feature_file)
       @feature_file = feature_file
@@ -22,10 +31,8 @@ module Cucover
       File.exist?(cache_filename)
     end
     
-    def dirty_files
-      source_files.select do |source_file|
-        File.mtime(Dir.pwd + '/' + source_file.strip) > time
-      end
+    def any_dirty_files?
+      not dirty_files.empty?
     end
     
     def time
@@ -33,6 +40,12 @@ module Cucover
     end
 
     private
+
+    def dirty_files
+      source_files.select do |source_file|
+        File.mtime(Dir.pwd + '/' + source_file.strip) >= time
+      end
+    end
     
     def source_files
       result = []
@@ -53,6 +66,7 @@ module Cucover
     
     def accept(visitor)
       return unless dirty?
+      Cucover.additional_covered_files.clear
       analyzer.run_hooked do
         super
       end
@@ -63,8 +77,12 @@ module Cucover
     
     def dirty?
       return true unless source_files_cache.exists?
-      return true if File.mtime(@file) >= source_files_cache.time
-      not source_files_cache.dirty_files.empty?
+      return true if changed_since_last_run?
+      source_files_cache.any_dirty_files?
+    end
+    
+    def changed_since_last_run?
+      File.mtime(@file) >= source_files_cache.time
     end
 
     def source_files_cache
@@ -76,9 +94,11 @@ module Cucover
     end
     
     def analyzed_files
-      normalized_files = analyzer.analyzed_files.map{ |f| File.expand_path(f).gsub(/^#{Dir.pwd}\//, '') }
-      interesting_files = normalized_files.reject{ |f| boring?(f) }
-      interesting_files.sort
+      normalized_files.reject{ |f| boring?(f) }.sort
+    end
+    
+    def normalized_files
+      (analyzer.analyzed_files + Cucover.additional_covered_files.uniq).map{ |f| File.expand_path(f).gsub(/^#{Dir.pwd}\//, '') }
     end
     
     def boring?(file)
@@ -95,6 +115,30 @@ module Cucover
       super feature.extend(LazyFeature)
     end
   end
+  
+  module Rails
+    class << self
+      def patch_if_necessary
+        return if @patched
+        return unless defined?(ActionView)
+        
+        ActionView::Template.instance_eval do
+          def new(*args)
+            super(*args).extend(Cucover::Rails::RecordsRenders)
+          end
+        end
+        
+        @patched = true
+      end
+    end
+    
+    module RecordsRenders
+      def render
+        Cucover.record(@filename)
+        super
+      end
+    end
+  end
 end
 
 module Cucumber
@@ -107,4 +151,8 @@ module Cucumber
       end
     end
   end
+end
+
+Before do
+  Cucover::Rails.patch_if_necessary
 end

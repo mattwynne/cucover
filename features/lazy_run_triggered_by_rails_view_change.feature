@@ -8,7 +8,7 @@ Feature: Lazy Run Triggered By Rails View Change
     And I am using the rails example app
     And I have run cucover features/see_widgets.feature
 
-  Scenario: Nothing to do
+  Scenario: Change nothing and run cucover again
     When I run cucover features/see_widgets.feature
     Then it should pass with:
       """
@@ -16,7 +16,7 @@ Feature: Lazy Run Triggered By Rails View Change
     
       """
       
-  Scenario: Touch source file
+  Scenario: Edit a view and run cucover again
     When I edit the source file app/views/widgets/index.html.erb
     When I run cucover features/see_widgets.feature
     Then it should pass with:
@@ -29,5 +29,5 @@ Feature: Lazy Run Triggered By Rails View Change
 
       1 scenario
       2 passed steps
-            
+      
       """

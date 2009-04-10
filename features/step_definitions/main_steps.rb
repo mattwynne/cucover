@@ -21,7 +21,6 @@ Given /^I am using the (.*) example app$/ do |app_name|
   @example_app = app_name
 end
 
-
 When /^I run cucover (.*)$/ do |args|
   cucover_binary = File.expand_path(File.dirname(__FILE__) + '../../../bin/cucover')
   within_examples_dir do
