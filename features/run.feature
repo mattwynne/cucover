@@ -6,7 +6,7 @@ Feature: Run
   Scenario: Run features, minimal output
     Given the cache is clear
     And I am using the simple example app
-    When I run cucover features/call_foo.feature features/call_foo_and_bar.feature
+    When I run cucover features/call_foo.feature features/call_foo_and_bar_together.feature
     Then it should pass with:
       """
       Feature: Call Foo
@@ -14,11 +14,11 @@ Feature: Run
         Scenario: Call Foo # features/call_foo.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:4
 
-      Feature: Call Foo and Bar
+      Feature: Call Foo and Bar Together
 
-        Scenario: Call Foo # features/call_foo_and_bar.feature:3
-          When I call Foo  # features/step_definitions/main_steps.rb:4
-          And I call Bar   # features/step_definitions/main_steps.rb:8
+        Scenario: Call Foo and Bar # features/call_foo_and_bar_together.feature:3
+          When I call Foo          # features/step_definitions/main_steps.rb:4
+          And I call Bar           # features/step_definitions/main_steps.rb:8
 
       2 scenarios
       3 passed steps
