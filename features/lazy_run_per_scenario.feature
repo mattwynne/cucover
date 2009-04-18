@@ -15,7 +15,8 @@ Feature: Lazy Run per Scenario
       0 scenarios
       
       """
-  
+      
+  @in-progress
   Scenario: Edit source file covered by only one scenario and run same feature again
     When I edit the source file lib/foo.rb
     And I run cucover features/call_foo_then_bar.feature

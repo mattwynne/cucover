@@ -29,6 +29,7 @@ To run your features lazily, just use the cucover binary instead of cucumber. Us
   * The features for cucuover itself seem to flicker (intermittently fail). This is probably due to timing issues when figuring out if a file is dirty.
   * Consider making failing features run even when they're not dirty, just for the good old red-bar feel
   * Make laziness work down to the granularity of scenarios, rather than features
+  * I suspect it does wierd things if you pass more than one visitor. Need to test for this.
     
 ## Similar 'Selective Testing' Tools
 

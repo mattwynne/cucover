@@ -1,5 +1,3 @@
 #!/usr/bin/env ruby
-require 'rubygems'
-require 'cucumber'
 require File.expand_path(File.dirname(__FILE__) + '../../lib/cucover')
 load Cucumber::BINARY
