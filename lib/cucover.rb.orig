@@ -14,6 +14,15 @@ require 'cucover/rails'
 
 module Cucover
   
+<<<<<<< HEAD:lib/cucover.rb
+  class TestExecution
+    def record(source_file)
+      additional_covered_files << source_file
+    end
+    
+    def additional_covered_files
+      @additional_covered_files ||= []
+=======
   class TestRun
     def initialize(feature_file, visitor)
       @feature_file, @visitor = feature_file, visitor
@@ -21,12 +30,37 @@ module Cucover
     
     def record(source_file)
       additional_covered_files << source_file
+>>>>>>> * Added feature to re-run failing tests, even if no source files changed:lib/cucover.rb
     end
     
     def fail!
       @failed = true
     end
     
+<<<<<<< HEAD:lib/cucover.rb
+    def status
+      @failed ? :failed : :passed
+    end
+    
+    def initialize(feature_file)
+      @feature_file = feature_file
+    end
+    
+    def may_execute?
+      dirty? || failed_on_last_run?
+    end
+    
+    def watch(visitor)
+      analyzer.run_hooked do
+        yield
+      end
+      
+      source_files_cache.save analyzed_files
+      status_cache.record(status)
+    end
+    
+    private
+=======
     def watch
       announce_skip unless may_execute?
 
@@ -64,12 +98,29 @@ module Cucover
       return false unless status_cache.exists?
       status_cache.last_run_status == "failed"
     end
+>>>>>>> * Added feature to re-run failing tests, even if no source files changed:lib/cucover.rb
+    
+    def failed_on_last_run?
+      return false unless status_cache.exists?
+      status_cache.last_run_status == "failed"
+    end
     
     def dirty?
       return true unless source_files_cache.exists?
+<<<<<<< HEAD:lib/cucover.rb
+      return true if feature_file_changed_since_last_run?
       source_files_cache.any_dirty_files?
     end
     
+    def feature_file_changed_since_last_run?
+      File.mtime(@feature_file) >= source_files_cache.time
+    end
+
+=======
+      source_files_cache.any_dirty_files?
+    end
+    
+>>>>>>> * Added feature to re-run failing tests, even if no source files changed:lib/cucover.rb
     def source_files_cache
       @source_files_cache ||= SourceFileCache.new(@feature_file)
     end
@@ -99,6 +150,39 @@ module Cucover
       @analyzer ||= Rcov::CodeCoverageAnalyzer.new      
     end
     
+<<<<<<< HEAD:lib/cucover.rb
+  end
+  
+  class << self
+    def start_test(test, visitor) 
+      @current_test = TestExecution.new(test.file)
+      return if should_skip?
+
+      @current_test.watch(visitor) do
+        yield
+      end
+    end
+    
+    def fail_current_test!
+      current_test.fail!
+    end
+    
+    def record(source_file)
+      current_test.record(source_file)
+    end
+    
+    def should_skip?
+      not current_test.may_execute?
+    end
+    
+    private
+    
+    def current_test
+      @current_test or raise("You need to start the a test first!")
+    end
+  end
+  
+=======
   end
   
   class << self
@@ -129,6 +213,7 @@ module Cucover
     end
   end
   
+>>>>>>> * Added feature to re-run failing tests, even if no source files changed:lib/cucover.rb
   class Cache
     def initialize(feature_file)
       @feature_file = feature_file
@@ -170,6 +255,7 @@ module Cucover
     end
     
     private
+<<<<<<< HEAD:lib/cucover.rb
 
     def cache_filename
       super + '.status'
@@ -187,6 +273,33 @@ module Cucover
       not dirty_files.empty?
     end
     
+    private
+
+    def dirty_files
+      source_files.select do |source_file|
+        File.mtime(source_file.strip) >= time
+      end
+    end
+    
+=======
+
+    def cache_filename
+      super + '.status'
+    end
+  end
+  
+  class SourceFileCache < Cache
+    def save(analyzed_files)
+      write_to_cache do |file|
+        file.puts analyzed_files
+      end
+    end
+    
+    def any_dirty_files?
+      not dirty_files.empty?
+    end
+    
+>>>>>>> * Added feature to re-run failing tests, even if no source files changed:lib/cucover.rb
     def source_files
       result = []
       File.open(cache_filename, "r") do |file|
@@ -195,6 +308,8 @@ module Cucover
         end
       end
       result
+<<<<<<< HEAD:lib/cucover.rb
+=======
     end
 
     private
@@ -203,6 +318,28 @@ module Cucover
       source_files.select do |source_file|
         File.mtime(source_file.strip) >= time
       end
+    end
+    
+  end
+  
+  module LazyStepInvocation
+    def accept(visitor)
+      skip_invoke! if Cucover.should_skip?
+      super
+    end
+    
+    def failed(exception, clear_backtrace)
+      Cucover.fail_current_test!
+      super
+    end
+  end
+  
+  module LazyFeature
+    def accept(visitor)
+      Cucover.start_test(self, visitor) do
+        super
+      end
+>>>>>>> * Added feature to re-run failing tests, even if no source files changed:lib/cucover.rb
     end
     
   end

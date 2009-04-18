@@ -12,7 +12,19 @@ Feature: Lazy Run per Scenario
     When I run cucover features/call_foo_then_bar.feature
     Then it should pass with:
       """
-      0 scenarios
+      
+      [ Cucover - Skipping clean feature ]
+      [ Last run status: passed ]
+      Feature: Call Foo then Bar
+
+        Scenario: Call Foo # features/call_foo_then_bar.feature:3
+          When I call Foo  # features/step_definitions/main_steps.rb:4
+
+        Scenario: Call Bar # features/call_foo_then_bar.feature:6
+          When I call Bar  # features/step_definitions/main_steps.rb:8
+
+      2 scenarios
+      2 skipped steps
       
       """
       

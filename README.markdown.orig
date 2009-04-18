@@ -32,7 +32,10 @@ To run your features lazily, just use the cucover binary instead of cucumber. Us
   * One or two of the features for Cucuover itself seem to flicker (intermittently fail). This is probably due to timing issues when figuring out if a file is dirty.
   * Make laziness work down to the granularity of scenarios, rather than features
   * I suspect it does wierd things if you pass more than one visitor. Need to test for this.
+<<<<<<< HEAD:README.markdown
+=======
   * Speed up the Rails test - maybe strip some guff out of the environment load?
+>>>>>>> * Added feature to re-run failing tests, even if no source files changed:README.markdown
     
 ## Similar 'Selective Testing' Tools
 

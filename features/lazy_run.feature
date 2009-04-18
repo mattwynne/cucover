@@ -12,7 +12,16 @@ Feature: Lazy Run
     When I run cucover features/call_foo.feature
     Then it should pass with:
       """
-      0 scenarios
+      
+      [ Cucover - Skipping clean feature ]
+      [ Last run status: passed ]
+      Feature: Call Foo
+      
+        Scenario: Call Foo # features/call_foo.feature:3
+          When I call Foo  # features/step_definitions/main_steps.rb:4
+      
+      1 scenario
+      1 skipped step
       
       """
       
@@ -36,13 +45,22 @@ Feature: Lazy Run
     And I run cucover features/call_foo.feature features/call_foo_and_bar_together.feature
     Then it should pass with:
       """
+      
+      [ Cucover - Skipping clean feature ]
+      [ Last run status: passed ]
+      Feature: Call Foo
+      
+        Scenario: Call Foo # features/call_foo.feature:3
+          When I call Foo  # features/step_definitions/main_steps.rb:4
+      
       Feature: Call Foo and Bar Together
 
         Scenario: Call Foo and Bar # features/call_foo_and_bar_together.feature:3
           When I call Foo          # features/step_definitions/main_steps.rb:4
           And I call Bar           # features/step_definitions/main_steps.rb:8
 
-      1 scenario
+      2 scenarios
+      1 skipped step
       2 passed steps
       
       """
