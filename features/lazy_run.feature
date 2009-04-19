@@ -25,6 +25,24 @@ Feature: Lazy Run
       
       """
       
+  Scenario: Change irrelevant source file and run same feature again
+    When I edit the source file lib/bar.rb
+    When I run cucover features/call_foo.feature
+    Then it should pass with:
+      """
+      
+      [ Cucover - Skipping clean feature ]
+      [ Last run status: passed ]
+      Feature: Call Foo
+      
+        Scenario: Call Foo # features/call_foo.feature:3
+          When I call Foo  # features/step_definitions/main_steps.rb:4
+      
+      1 scenario
+      1 skipped step
+      
+      """  
+      
   Scenario: Touch feature file and run same feature again
     When I edit the source file features/call_foo.feature
     And I run cucover features/call_foo.feature

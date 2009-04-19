@@ -42,8 +42,8 @@ end
 
 def rerun
   return nil unless File.exist?('rerun')
-  result = File.read('rerun')
-  return nil if result.strip.empty?
+  result = File.read('rerun').strip
+  return nil if result.empty?
   result
 end
 
@@ -51,7 +51,9 @@ Cucover::Rake::Task.new(:default) do |t|
   t.tags = '~in-progress'
 end
 
-Cucover::Rake::Task.new(:failures) do |t|
+Cucover::Rake::Task.new(:all)
+
+Cucover::Rake::Task.new(:failed) do |t|
   t.pretty!
   t.features = [ rerun || 'features' ]
 end
