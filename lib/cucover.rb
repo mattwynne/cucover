@@ -10,51 +10,82 @@ require 'spec'
 $:.unshift(File.dirname(__FILE__)) 
 require 'cucover/monkey'
 require 'cucover/rails'
+require 'cucover/lazy_test_case'
+require 'cucover/lazy_scenario'
+require 'cucover/lazy_step_invocation'
 
 module Cucover
-  
-  class ScenarioIdentifier
-    attr_reader :feature_file, :line
-    
-    def initialize(feature_file, line)
-      @feature_file, @line = feature_file, line
+  class TestIdentifier < Struct.new(:file, :line, :depends_on)
+    def initialize(file, line, depends_on = nil)
+      super
+      self.freeze
     end
   end
   
-  class TestRun
-    class CoverageRecording
-      def initialize(scenario_identifier)
-        @analyzer = Rcov::CodeCoverageAnalyzer.new        
-        @cache = SourceFileCache.new(scenario_identifier)
-        @covered_files = []
-      end
-      
-      def record_file(source_file)
-        @covered_files << source_file unless @covered_files.include?(source_file)
-      end
-      
-      def record_coverage
-        @analyzer.run_hooked do
-          yield
-        end
-        @covered_files.concat @analyzer.analyzed_files
-      end
-      
-      def save
-        @cache.save normalized_files
-      end
-      
-      private
-      
-      def normalized_files
-        @covered_files.map{ |f| File.expand_path(f).gsub(/^#{Dir.pwd}\//, '') }
-      end
+  class CoverageRecording
+    def initialize(test_identifier)
+      @analyzer = Rcov::CodeCoverageAnalyzer.new        
+      @cache = SourceFileCache.new(test_identifier)
+      @covered_files = []
     end
     
-    def initialize(scenario_identifier, visitor)
-      @scenario_identifier, @visitor = scenario_identifier, visitor
-      @coverage_recording = CoverageRecording.new(scenario_identifier)
-      @source_files_cache = SourceFileCache.new(scenario_identifier)
+    def record_file(source_file)
+      @covered_files << source_file unless @covered_files.include?(source_file)
+    end
+    
+    def record_coverage
+      @analyzer.run_hooked do
+        yield
+      end
+      @covered_files.concat @analyzer.analyzed_files
+    end
+    
+    def save
+      @cache.save normalized_files
+    end
+    
+    private
+    
+    def normalized_files
+      @covered_files.map{ |f| File.expand_path(f).gsub(/^#{Dir.pwd}\//, '') }
+    end
+  end
+  
+  class Executor
+    def initialize(test_identifier)
+      @source_files_cache = SourceFileCache.new(test_identifier)      
+      @status_cache       = StatusCache.new(test_identifier)
+      @dependency         = test_identifier.depends_on
+    end
+    
+    def should_execute?
+      dirty? || failed_on_last_run? || dependency_should_execute?
+    end
+    
+    private
+    
+    def dependency_should_execute?
+      return false unless @dependency
+      Executor.new(@dependency).should_execute?
+    end
+    
+    def failed_on_last_run?
+      return false unless @status_cache.exists?
+      @status_cache.last_run_status == "failed"
+    end
+    
+    def dirty?
+      return true unless @source_files_cache.exists?
+      @source_files_cache.any_dirty_files?
+    end
+  end
+  
+  class TestMonitor
+    def initialize(test_identifier, visitor)
+      @test_identifier, @visitor = test_identifier, visitor
+      @coverage_recording = CoverageRecording.new(test_identifier)
+      @status_cache       = StatusCache.new(test_identifier)
+      @executor           = Executor.new(test_identifier)
     end
     
     def record(source_file)
@@ -65,20 +96,18 @@ module Cucover
       @failed = true
     end
     
-    def watch
-      announce_skip unless may_execute?
+    def watch(&block)
+      announce_skip unless should_execute?
 
-      @coverage_recording.record_file(@scenario_identifier.feature_file)
-      @coverage_recording.record_coverage do #TODO: &block
-        yield
-      end
+      @coverage_recording.record_file(@test_identifier.file)
+      @coverage_recording.record_coverage(&block)
       @coverage_recording.save
       
-      status_cache.record(status)
+      @status_cache.record(status)
     end
     
-    def may_execute?
-      dirty? || failed_on_last_run?
+    def should_execute?
+      @executor.should_execute?
     end
     
     private
@@ -90,29 +119,12 @@ module Cucover
     def announce_skip
       @visitor.announce "[ Cucover - Skipping clean scenario ]"
     end
-    
-    def failed_on_last_run?
-      return false unless status_cache.exists?
-      status_cache.last_run_status == "failed"
-    end
-    
-    def dirty?
-      return true unless @source_files_cache.exists?
-      @source_files_cache.any_dirty_files?
-    end
-    
-    def status_cache
-      @status_cache ||= StatusCache.new(@scenario_identifier)
-    end
   end
   
   class << self
-    def start_test(test_file, line, visitor) 
-      @current_test = TestRun.new(ScenarioIdentifier.new(test_file, line), visitor)
-
-      @current_test.watch do
-        yield
-      end
+    def start_test(test_identifier, visitor, &block)
+      @current_test = TestMonitor.new(test_identifier, visitor)
+      @current_test.watch(&block)
     end
     
     def fail_current_test!
@@ -124,7 +136,7 @@ module Cucover
     end
     
     def can_skip?
-      not current_test.may_execute?
+      not current_test.should_execute?
     end
     
     private
@@ -135,8 +147,8 @@ module Cucover
   end
   
   class Cache
-    def initialize(scenario_identifier)
-      @scenario_identifier = scenario_identifier
+    def initialize(test_identifier)
+      @test_identifier = test_identifier
     end
     
     def exists?
@@ -150,7 +162,7 @@ module Cucover
     end
     
     def cache_folder
-      @scenario_identifier.feature_file.gsub(/([^\/]*\.feature)/, ".coverage/\\1/#{@scenario_identifier.line.to_s}")
+      @test_identifier.file.gsub(/([^\/]*\.feature)/, ".coverage/\\1/#{@test_identifier.line.to_s}")
     end
     
     def time
@@ -214,27 +226,6 @@ module Cucover
       end
     end
   end
-  
-  module LazyStepInvocation
-    def accept(visitor)
-      skip_invoke! if Cucover.can_skip?
-      super
-    end
-    
-    def failed(exception, clear_backtrace)
-      Cucover.fail_current_test!
-      super
-    end
-  end
-  
-  module LazyTestCase
-    def accept(visitor)
-      Cucover.start_test(@feature.file, @line, visitor) do
-        super
-      end
-    end
-  end
-  
 end
 
 # the way scenario and background behave needs to be different. 
@@ -242,7 +233,7 @@ end
 # also if a background is used by a scenario that will be re-run, we mustn't skip the background's step executions
 # so the dependency is two-way. eugh.
 
-Cucover::Monkey.extend_every Cucumber::Ast::Scenario       => Cucover::LazyTestCase
+Cucover::Monkey.extend_every Cucumber::Ast::Scenario       => Cucover::LazyScenario
 Cucover::Monkey.extend_every Cucumber::Ast::Background     => Cucover::LazyTestCase
 Cucover::Monkey.extend_every Cucumber::Ast::StepInvocation => Cucover::LazyStepInvocation
 

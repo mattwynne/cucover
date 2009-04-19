@@ -86,7 +86,6 @@ Feature: Lazy Run per Scenario
         Background:               # features/call_foo_from_background_then_bar.feature:3
           Given I have called Foo # features/step_definitions/main_steps.rb:5
 
-
         Scenario: Call Bar        # features/call_foo_from_background_then_bar.feature:6
           When I call Bar         # features/step_definitions/main_steps.rb:9
 
@@ -97,23 +96,23 @@ Feature: Lazy Run per Scenario
 
   @in-progress
   Scenario: Edit source file covered by a scenario with a background
-    Given I have run cucover features/call_foo_from_background_then_bar.feature
+    Given I have run cucover features/call_foo_from_background_then_bar_then_baz.feature
     When I edit the source file lib/bar.rb
-    And I run cucover features/call_foo_from_background_then_bar.feature
+    And I run cucover features/call_foo_from_background_then_bar_then_baz.feature
     Then it should pass with:
       """
       Feature: Call Foo from Background then Bar then Baz
       
-        Background:               # features/call_foo_from_background_then_bar.feature:3
+        Background:               # features/call_foo_from_background_then_bar_then_baz.feature:3
           Given I have called Foo # features/step_definitions/main_steps.rb:5
 
-        Scenario: Call Bar        # features/call_foo_from_background_then_bar.feature:6
+        Scenario: Call Bar        # features/call_foo_from_background_then_bar_then_baz.feature:6
           When I call Bar         # features/step_definitions/main_steps.rb:9
-
-
-        [ Cucover - Skipping clean scenario ]
-        Scenario: Call Baz        # features/call_foo_from_background_then_bar.feature:6
-          When I call Baz        # features/step_definitions/main_steps.rb:9
+      
+      
+      [ Cucover - Skipping clean scenario ]
+        Scenario: Call Baz        # features/call_foo_from_background_then_bar_then_baz.feature:9
+          When I call Baz         # features/step_definitions/main_steps.rb:9
 
       2 scenarios
       1 skipped step
