@@ -28,7 +28,7 @@ Feature: Lazy Run per Scenario
       2 skipped steps
       
       """
-      
+
   Scenario: Edit source file covered by only one scenario and run same feature again
     Given I have run cucover features/call_foo_then_bar.feature
     When I edit the source file lib/foo.rb

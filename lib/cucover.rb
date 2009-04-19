@@ -11,14 +11,54 @@ $:.unshift(File.dirname(__FILE__))
 require 'cucover/monkey'
 require 'cucover/rails'
 
-module Cucover  
+module Cucover
+  
+  class ScenarioIdentifier
+    attr_reader :feature_file, :line
+    
+    def initialize(feature_file, line)
+      @feature_file, @line = feature_file, line
+    end
+  end
+  
   class TestRun
-    def initialize(feature_file, line, visitor)
-      @feature_file, @line, @visitor = feature_file, line, visitor
+    class CoverageRecording
+      def initialize(scenario_identifier)
+        @analyzer = Rcov::CodeCoverageAnalyzer.new        
+        @cache = SourceFileCache.new(scenario_identifier)
+        @covered_files = []
+      end
+      
+      def record_file(source_file)
+        @covered_files << source_file unless @covered_files.include?(source_file)
+      end
+      
+      def record_coverage
+        @analyzer.run_hooked do
+          yield
+        end
+        @covered_files.concat @analyzer.analyzed_files
+      end
+      
+      def save
+        @cache.save normalized_files
+      end
+      
+      private
+      
+      def normalized_files
+        @covered_files.map{ |f| File.expand_path(f).gsub(/^#{Dir.pwd}\//, '') }
+      end
+    end
+    
+    def initialize(scenario_identifier, visitor)
+      @scenario_identifier, @visitor = scenario_identifier, visitor
+      @coverage_recording = CoverageRecording.new(scenario_identifier)
+      @source_files_cache = SourceFileCache.new(scenario_identifier)
     end
     
     def record(source_file)
-      additional_covered_files << source_file
+      @coverage_recording.record_file(source_file)
     end
     
     def fail!
@@ -28,12 +68,12 @@ module Cucover
     def watch
       announce_skip unless may_execute?
 
-      analyzer.run_hooked do
+      @coverage_recording.record_file(@scenario_identifier.feature_file)
+      @coverage_recording.record_coverage do #TODO: &block
         yield
       end
+      @coverage_recording.save
       
-      record(@feature_file)
-      source_files_cache.save analyzed_files
       status_cache.record(status)
     end
     
@@ -47,10 +87,6 @@ module Cucover
       @failed ? :failed : :passed
     end
     
-    def additional_covered_files
-      @additional_covered_files ||= []
-    end
-    
     def announce_skip
       @visitor.announce "[ Cucover - Skipping clean scenario ]"
     end
@@ -61,44 +97,18 @@ module Cucover
     end
     
     def dirty?
-      return true unless source_files_cache.exists?
-      source_files_cache.any_dirty_files?
-    end
-    
-    def source_files_cache
-      @source_files_cache ||= SourceFileCache.new(@feature_file, @line)
+      return true unless @source_files_cache.exists?
+      @source_files_cache.any_dirty_files?
     end
     
     def status_cache
-      @status_cache ||= StatusCache.new(@feature_file, @line)
-    end
-    
-    def source_files
-      analyzed_files
-    end
-    
-    def analyzed_files
-      normalized_files.reject{ |f| boring?(f) }.sort
-    end
-    
-    def normalized_files
-      (analyzer.analyzed_files + additional_covered_files.uniq).map{ |f| File.expand_path(f).gsub(/^#{Dir.pwd}\//, '') }
-    end
-    
-    def boring?(file)
-      return false
-      # TODO: maybe use this code for presentation?
-      # (file.match /gem/) || (file.match /vendor/) || (file.match /lib\/ruby/) 
-    end
-    
-    def analyzer
-      @analyzer ||= Rcov::CodeCoverageAnalyzer.new      
+      @status_cache ||= StatusCache.new(@scenario_identifier)
     end
   end
   
   class << self
     def start_test(test_file, line, visitor) 
-      @current_test = TestRun.new(test_file, line, visitor)
+      @current_test = TestRun.new(ScenarioIdentifier.new(test_file, line), visitor)
 
       @current_test.watch do
         yield
@@ -125,8 +135,8 @@ module Cucover
   end
   
   class Cache
-    def initialize(feature_file, line)
-      @feature_file, @line = feature_file, line
+    def initialize(scenario_identifier)
+      @scenario_identifier = scenario_identifier
     end
     
     def exists?
@@ -140,7 +150,7 @@ module Cucover
     end
     
     def cache_folder
-      @feature_file.gsub(/([^\/]*\.feature)/, ".coverage/\\1/#{@line.to_s}")
+      @scenario_identifier.feature_file.gsub(/([^\/]*\.feature)/, ".coverage/\\1/#{@scenario_identifier.line.to_s}")
     end
     
     def time
@@ -188,14 +198,14 @@ module Cucover
       not dirty_files.empty?
     end
     
-    def source_files
-      cache_content
-    end
-
     private
     
     def cache_filename
       'covered_source_files'
+    end
+
+    def source_files
+      cache_content
     end
 
     def dirty_files
@@ -226,6 +236,11 @@ module Cucover
   end
   
 end
+
+# the way scenario and background behave needs to be different. 
+# scenarios should inherit their re-run triggers from backgrounds, so that if a background is changed, all the scenarios are re-run
+# also if a background is used by a scenario that will be re-run, we mustn't skip the background's step executions
+# so the dependency is two-way. eugh.
 
 Cucover::Monkey.extend_every Cucumber::Ast::Scenario       => Cucover::LazyTestCase
 Cucover::Monkey.extend_every Cucumber::Ast::Background     => Cucover::LazyTestCase
