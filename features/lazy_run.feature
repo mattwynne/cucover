@@ -12,13 +12,12 @@ Feature: Lazy Run
     When I run cucover features/call_foo.feature
     Then it should pass with:
       """
-      
-      [ Cucover - Skipping clean feature ]
-      [ Last run status: passed ]
       Feature: Call Foo
       
+
+      [ Cucover - Skipping clean scenario ]
         Scenario: Call Foo # features/call_foo.feature:3
-          When I call Foo  # features/step_definitions/main_steps.rb:4
+          When I call Foo  # features/step_definitions/main_steps.rb:9
       
       1 scenario
       1 skipped step
@@ -30,13 +29,12 @@ Feature: Lazy Run
     When I run cucover features/call_foo.feature
     Then it should pass with:
       """
-      
-      [ Cucover - Skipping clean feature ]
-      [ Last run status: passed ]
       Feature: Call Foo
       
+
+      [ Cucover - Skipping clean scenario ]
         Scenario: Call Foo # features/call_foo.feature:3
-          When I call Foo  # features/step_definitions/main_steps.rb:4
+          When I call Foo  # features/step_definitions/main_steps.rb:9
       
       1 scenario
       1 skipped step
@@ -51,7 +49,7 @@ Feature: Lazy Run
       Feature: Call Foo
 
         Scenario: Call Foo # features/call_foo.feature:3
-          When I call Foo  # features/step_definitions/main_steps.rb:4
+          When I call Foo  # features/step_definitions/main_steps.rb:9
 
       1 scenario
       1 passed step
@@ -63,19 +61,18 @@ Feature: Lazy Run
     And I run cucover features/call_foo.feature features/call_foo_and_bar_together.feature
     Then it should pass with:
       """
-      
-      [ Cucover - Skipping clean feature ]
-      [ Last run status: passed ]
       Feature: Call Foo
       
+      
+      [ Cucover - Skipping clean scenario ]
         Scenario: Call Foo # features/call_foo.feature:3
-          When I call Foo  # features/step_definitions/main_steps.rb:4
+          When I call Foo  # features/step_definitions/main_steps.rb:9
       
       Feature: Call Foo and Bar Together
 
         Scenario: Call Foo and Bar # features/call_foo_and_bar_together.feature:3
-          When I call Foo          # features/step_definitions/main_steps.rb:4
-          And I call Bar           # features/step_definitions/main_steps.rb:8
+          When I call Foo          # features/step_definitions/main_steps.rb:9
+          And I call Bar           # features/step_definitions/main_steps.rb:9
 
       2 scenarios
       1 skipped step

@@ -2,14 +2,19 @@
 
 Cucover is a thin wrapper for [Cucumber](http://github.com/aslakhellesoy/cucumber/tree/master) which makes it lazy.
 
-What does it mean for Cucumber to be lazy? It will only run a feature if it needs to.
+>> Question:
+>> What does it mean for Cucumber to be lazy? 
 
-How does it decide whether it needs to run a feature? Every time you run a feature using Cucover, it watches the code in your application that is executed, and remembers. The next time you run Cucover, it skips a feature if the source files (or the feature itself) have not been changed since it was last run.
+> Answer:
+> It will only run a scenario if it needs to.
+
+How does it decide whether it needs to run a scenario? Every time you run a feature using Cucover, it watches the code in your application that is executed, and remembers. The next time you run Cucover, it skips a scenario if the source files (or the feature itself) have not been changed since it was last run.
 
 ## Features
 
+  * Within a feature, Cucover will only re-run the Scenarios that have been affected by your changes
   * Uses RCov to map features to covered source files
-  * Patches Rails to also map features to covered .erb templates
+  * Patches Rails to also map scenarios to covered .erb view templates
   * Shows skipped Scenarios, for confidence
   * Re-runs failing features, even when nothing has changed, for that good old red-bar feel.
 
@@ -30,9 +35,9 @@ To run your features lazily, just use the cucover binary instead of cucumber. Us
 
 ## Todo
   * One or two of the features for Cucuover itself seem to flicker (intermittently fail). This is probably due to timing issues when figuring out if a file is dirty.
-  * Make laziness work down to the granularity of scenarios, rather than features
-  * I suspect it does wierd things if you pass more than one visitor. Need to test for this.
   * Speed up the Rails test - maybe strip some guff out of the environment load?
+  * I suspect it may do wierd things if you pass more than one visitor. Need to test for this.
+  * Consider extending Cucumber::Parser::Filter and using that to stop clean scenarios from even being loaded into the AST for the test run instead of the current mechanism.
     
 ## Similar 'Selective Testing' Tools
 

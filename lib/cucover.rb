@@ -1,4 +1,3 @@
-
 require 'rubygems'
 
 gem 'cucumber', '>=0.3'
@@ -12,11 +11,10 @@ $:.unshift(File.dirname(__FILE__))
 require 'cucover/monkey'
 require 'cucover/rails'
 
-module Cucover
-  
+module Cucover  
   class TestRun
-    def initialize(feature_file, visitor)
-      @feature_file, @visitor = feature_file, visitor
+    def initialize(feature_file, line, visitor)
+      @feature_file, @line, @visitor = feature_file, line, visitor
     end
     
     def record(source_file)
@@ -54,10 +52,7 @@ module Cucover
     end
     
     def announce_skip
-      messages = []
-      messages << "Cucover - Skipping clean feature"
-      messages << "Last run status: #{status_cache.last_run_status}"
-      @visitor.announce messages.flatten.map{ |m| "[ #{m.rstrip} ]"}.join("\n")
+      @visitor.announce "[ Cucover - Skipping clean scenario ]"
     end
     
     def failed_on_last_run?
@@ -71,13 +66,13 @@ module Cucover
     end
     
     def source_files_cache
-      @source_files_cache ||= SourceFileCache.new(@feature_file)
+      @source_files_cache ||= SourceFileCache.new(@feature_file, @line)
     end
     
     def status_cache
-      @status_cache ||= StatusCache.new(@feature_file)
+      @status_cache ||= StatusCache.new(@feature_file, @line)
     end
-
+    
     def source_files
       analyzed_files
     end
@@ -92,18 +87,18 @@ module Cucover
     
     def boring?(file)
       return false
-      (file.match /gem/) || (file.match /vendor/) || (file.match /lib\/ruby/)
+      # TODO: maybe use this code for presentation?
+      # (file.match /gem/) || (file.match /vendor/) || (file.match /lib\/ruby/) 
     end
     
     def analyzer
       @analyzer ||= Rcov::CodeCoverageAnalyzer.new      
     end
-    
   end
   
   class << self
-    def start_test(test, visitor) 
-      @current_test = TestRun.new(test.file, visitor)
+    def start_test(test_file, line, visitor) 
+      @current_test = TestRun.new(test_file, line, visitor)
 
       @current_test.watch do
         yield
@@ -118,7 +113,7 @@ module Cucover
       current_test.record(source_file)
     end
     
-    def should_skip?
+    def can_skip?
       not current_test.may_execute?
     end
     
@@ -130,37 +125,43 @@ module Cucover
   end
   
   class Cache
-    def initialize(feature_file)
-      @feature_file = feature_file
-    end    
-    
-    def exists?
-      File.exist?(cache_filename)
+    def initialize(feature_file, line)
+      @feature_file, @line = feature_file, line
     end
     
-    def cache_filename
-      @feature_file.gsub /([^\/]*\.feature)/, '.coverage/\1'
+    def exists?
+      File.exist?(cache_file)
+    end
+    
+    private
+    
+    def cache_file
+      cache_folder + '/' + cache_filename
+    end
+    
+    def cache_folder
+      @feature_file.gsub(/([^\/]*\.feature)/, ".coverage/\\1/#{@line.to_s}")
     end
     
     def time
-      File.mtime(cache_filename)
+      File.mtime(cache_file)
     end
 
     def write_to_cache
-      FileUtils.mkdir_p File.dirname(cache_filename)
-      File.open(cache_filename, "w") do |file|
+      FileUtils.mkdir_p File.dirname(cache_file)
+      File.open(cache_file, "w") do |file|
         yield file
       end
+    end
+    
+    def cache_content
+      File.readlines(cache_file)
     end
   end
   
   class StatusCache < Cache
     def last_run_status
-      File.open(cache_filename, "r") do |file|
-        file.each_line do |line|
-          return line.strip
-        end
-      end
+      cache_content.to_s.strip
     end
     
     def record(status)
@@ -172,7 +173,7 @@ module Cucover
     private
 
     def cache_filename
-      super + '.status'
+      'last_run_status'
     end
   end
   
@@ -188,28 +189,25 @@ module Cucover
     end
     
     def source_files
-      result = []
-      File.open(cache_filename, "r") do |file|
-        file.each_line do |line|
-          result.push line
-        end
-      end
-      result
+      cache_content
     end
 
     private
+    
+    def cache_filename
+      'covered_source_files'
+    end
 
     def dirty_files
       source_files.select do |source_file|
         File.mtime(source_file.strip) >= time
       end
     end
-    
   end
   
   module LazyStepInvocation
     def accept(visitor)
-      skip_invoke! if Cucover.should_skip?
+      skip_invoke! if Cucover.can_skip?
       super
     end
     
@@ -219,17 +217,18 @@ module Cucover
     end
   end
   
-  module LazyFeature
+  module LazyTestCase
     def accept(visitor)
-      Cucover.start_test(self, visitor) do
+      Cucover.start_test(@feature.file, @line, visitor) do
         super
       end
     end
-    
   end
+  
 end
 
-Cucover::Monkey.extend_every Cucumber::Ast::Feature => Cucover::LazyFeature
+Cucover::Monkey.extend_every Cucumber::Ast::Scenario       => Cucover::LazyTestCase
+Cucover::Monkey.extend_every Cucumber::Ast::Background     => Cucover::LazyTestCase
 Cucover::Monkey.extend_every Cucumber::Ast::StepInvocation => Cucover::LazyStepInvocation
 
 Before do

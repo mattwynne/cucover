@@ -12,7 +12,7 @@ Feature: Fail
       Feature: Call Foo
       
         Scenario: Call Foo # features/call_foo.feature:3
-          When I call Foo  # features/step_definitions/main_steps.rb:4
+          When I call Foo  # features/step_definitions/main_steps.rb:9
       
       Feature: Epic Fail
         In order to make my job look really hard
@@ -20,10 +20,10 @@ Feature: Fail
         I want tests to fail from time to time
       
         Scenario: Do something stupid # features/fail.feature:6
-          When I divide by zero       # features/step_definitions/main_steps.rb:12
+          When I divide by zero       # features/step_definitions/main_steps.rb:13
             divided by 0 (ZeroDivisionError)
-            ./features/step_definitions/main_steps.rb:13:in `/'
-            ./features/step_definitions/main_steps.rb:13:in `/^I divide by zero$/'
+            ./features/step_definitions/main_steps.rb:14:in `/'
+            ./features/step_definitions/main_steps.rb:14:in `/^I divide by zero$/'
             features/fail.feature:7:in `When I divide by zero'
       
       2 scenarios
@@ -45,10 +45,10 @@ Feature: Fail
       I want tests to fail from time to time
     
       Scenario: Do something stupid # features/fail.feature:6
-        When I divide by zero       # features/step_definitions/main_steps.rb:12
+        When I divide by zero       # features/step_definitions/main_steps.rb:13
           divided by 0 (ZeroDivisionError)
-          ./features/step_definitions/main_steps.rb:13:in `/'
-          ./features/step_definitions/main_steps.rb:13:in `/^I divide by zero$/'
+          ./features/step_definitions/main_steps.rb:14:in `/'
+          ./features/step_definitions/main_steps.rb:14:in `/^I divide by zero$/'
           features/fail.feature:7:in `When I divide by zero'
     
     1 scenario

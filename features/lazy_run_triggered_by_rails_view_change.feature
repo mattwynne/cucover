@@ -13,11 +13,10 @@ Feature: Lazy Run Triggered By Rails View Change
     When I run cucover features/see_widgets.feature
     Then it should pass with:
       """
-      
-      [ Cucover - Skipping clean feature ]
-      [ Last run status: passed ]
       Feature: See widgets
 
+
+      [ Cucover - Skipping clean scenario ]
         Scenario: See widgets                                  # features/see_widgets.feature:3
           When I go to /widgets                                # features/step_definitions/webrat_steps.rb:1
           Then I should see "Look at all these lovely widgets" # features/step_definitions/webrat_steps.rb:5

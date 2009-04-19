@@ -3,8 +3,8 @@ require 'cucumber/rake/task'
 module Cucover
   module Rake
     class Task < Cucumber::Rake::Task
-      def features=(value)
-        @features = value
+      def feature_pattern=(value)
+        @feature_pattern = value
       end
       
       def pretty!
@@ -17,8 +17,12 @@ module Cucover
       
       private
       
-      def features
-        [ @features || 'features' ]
+      def feature_pattern
+        @feature_pattern || 'features/**/*.feature'
+      end
+      
+      def feature_files(task_arguments = nil)
+        FileList[feature_pattern]
       end
       
       def formatters
@@ -34,7 +38,7 @@ module Cucover
       end
       
       def cucumber_opts
-        features + formatters + tags
+        formatters + tags
       end      
     end
   end
@@ -55,5 +59,5 @@ Cucover::Rake::Task.new(:all)
 
 Cucover::Rake::Task.new(:failed) do |t|
   t.pretty!
-  t.features = [ rerun || 'features' ]
+  t.feature_pattern = rerun if rerun
 end
