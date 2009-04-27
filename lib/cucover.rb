@@ -1,6 +1,6 @@
 require 'rubygems'
 
-gem 'cucumber', '>=0.3'
+gem 'cucumber', '>=0.3.1'
 require 'cucumber'
 
 gem 'spicycode-rcov', '>=0.8.1.5.0'
@@ -10,15 +10,17 @@ require 'spec'
 $:.unshift(File.dirname(__FILE__)) 
 require 'cucover/monkey'
 require 'cucover/rails'
-require 'cucover/lazy_test_case'
-require 'cucover/lazy_scenario'
-require 'cucover/lazy_step_invocation'
 
 module Cucover
-  class TestIdentifier < Struct.new(:file, :line, :depends_on)
-    def initialize(file, line, depends_on = nil)
-      super
+  class TestIdentifier < Struct.new(:file, :line)
+    def initialize(file_colon_line)
+      file, line = file_colon_line.split(':')
+      super(file, line)
       self.freeze
+    end
+    
+    def to_s
+      "#{file}:#{line.to_s}"
     end
   end
   
@@ -55,19 +57,13 @@ module Cucover
     def initialize(test_identifier)
       @source_files_cache = SourceFileCache.new(test_identifier)      
       @status_cache       = StatusCache.new(test_identifier)
-      @dependency         = test_identifier.depends_on
     end
     
     def should_execute?
-      dirty? || failed_on_last_run? || dependency_should_execute?
+      dirty? || failed_on_last_run?
     end
     
     private
-    
-    def dependency_should_execute?
-      return false unless @dependency
-      Executor.new(@dependency).should_execute?
-    end
     
     def failed_on_last_run?
       return false unless @status_cache.exists?
@@ -80,12 +76,11 @@ module Cucover
     end
   end
   
-  class TestMonitor
+  class TestRun
     def initialize(test_identifier, visitor)
       @test_identifier, @visitor = test_identifier, visitor
       @coverage_recording = CoverageRecording.new(test_identifier)
       @status_cache       = StatusCache.new(test_identifier)
-      @executor           = Executor.new(test_identifier)
     end
     
     def record(source_file)
@@ -97,17 +92,11 @@ module Cucover
     end
     
     def watch(&block)
-      announce_skip unless should_execute?
-
-      @coverage_recording.record_file(@test_identifier.file)
+      record(@test_identifier.file)
       @coverage_recording.record_coverage(&block)
       @coverage_recording.save
       
       @status_cache.record(status)
-    end
-    
-    def should_execute?
-      @executor.should_execute?
     end
     
     private
@@ -115,15 +104,11 @@ module Cucover
     def status
       @failed ? :failed : :passed
     end
-    
-    def announce_skip
-      @visitor.announce "[ Cucover - Skipping clean scenario ]"
-    end
   end
   
   class << self
     def start_test(test_identifier, visitor, &block)
-      @current_test = TestMonitor.new(test_identifier, visitor)
+      @current_test = TestRun.new(test_identifier, visitor)
       @current_test.watch(&block)
     end
     
@@ -142,7 +127,7 @@ module Cucover
     private
     
     def current_test
-      @current_test or raise("You need to start the a test first!")
+      @current_test or raise("You need to start a test first, with a call to #start_test")
     end
   end
   
@@ -222,20 +207,100 @@ module Cucover
 
     def dirty_files
       source_files.select do |source_file|
-        File.mtime(source_file.strip) >= time
+        !File.exist?(source_file.strip) or (File.mtime(source_file.strip) >= time)
       end
     end
   end
+
+  module RecordsFailures
+    def failed(exception, clear_backtrace)
+      Cucover.fail_current_test!
+      super
+    end
+  end
+  
+  class Controller
+    class << self
+      def [](scenario)
+        new(TestIdentifier.new(scenario.file_colon_line))
+      end
+    end
+    
+    def initialize(test_id)
+      @test_id  = test_id
+      @executor = Executor.new(test_id)
+    end
+    
+    def should_skip?
+      yield if (block_given? and !should_execute?)
+      return !should_execute?
+    end
+    
+    def should_execute?
+      result = @executor.should_execute?      
+      yield if block_given? and result
+      result
+    end
+  end
+
+  module RecordsCoverage
+    def accept(visitor)
+      Cucover.start_test(TestIdentifier.new(file_colon_line), visitor) do
+        super
+      end
+    end
+  end
+  
+  module ScenarioExtensions
+    module SkipsStableTests    
+      def accept(visitor)
+        if should_skip?
+          skip_invoke!
+          visitor.announce "[ Cucover - Skipping clean scenario ]"
+        end
+        super
+      end
+      
+      def should_skip?
+        Cucover::Controller[self].should_skip? and (!@background or Cucover::Controller[@background].should_skip?)
+      end
+    end
+
+    include SkipsStableTests
+    include RecordsCoverage
+  end
+  
+  module FeatureExtensions
+    def should_skip?
+      @feature_elements.all?{ |e| Cucover::Controller[e].should_skip? }
+    end
+  end
+  
+  module BackgroundExtensions
+    module SkipsStableTests
+      def accept(visitor)
+        if (@feature.should_skip? and Cucover::Controller[self].should_skip?)
+          skip_invoke!
+          visitor.announce "[ Cucover - Skipping background for clean feature ]"
+        end
+        super
+      end
+      
+      def skip_invoke!
+        @step_invocations.each{ |i| i.skip_invoke! }        
+      end
+    end
+
+    include RecordsCoverage
+    include SkipsStableTests
+  end
+  
 end
 
-# the way scenario and background behave needs to be different. 
-# scenarios should inherit their re-run triggers from backgrounds, so that if a background is changed, all the scenarios are re-run
-# also if a background is used by a scenario that will be re-run, we mustn't skip the background's step executions
-# so the dependency is two-way. eugh.
-
-Cucover::Monkey.extend_every Cucumber::Ast::Scenario       => Cucover::LazyScenario
-Cucover::Monkey.extend_every Cucumber::Ast::Background     => Cucover::LazyTestCase
-Cucover::Monkey.extend_every Cucumber::Ast::StepInvocation => Cucover::LazyStepInvocation
+Cucover::Monkey.extend_every Cucumber::Ast::Feature        => Cucover::FeatureExtensions
+Cucover::Monkey.extend_every Cucumber::Ast::Scenario       => Cucover::ScenarioExtensions
+Cucover::Monkey.extend_every Cucumber::Ast::Background     => Cucover::BackgroundExtensions
+Cucover::Monkey.extend_every Cucumber::Ast::StepInvocation => Cucover::RecordsFailures
 
 Before do
   Cucover::Rails.patch_if_necessary

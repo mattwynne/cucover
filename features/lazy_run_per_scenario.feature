@@ -51,16 +51,15 @@ Feature: Lazy Run per Scenario
       
       """
   
-  @in-progress
   Scenario: Run a feature with a background twice
     Given I have run cucover features/call_foo_from_background_then_bar.feature
-    And I run cucover features/call_foo_from_background_then_bar.feature
+    When I run cucover features/call_foo_from_background_then_bar.feature
     Then it should pass with:
       """
       Feature: Call Foo from Background then Bar
 
       
-      [ Cucover - Skipping clean scenario ]
+      [ Cucover - Skipping background for clean feature ]
         Background:               # features/call_foo_from_background_then_bar.feature:3
           Given I have called Foo # features/step_definitions/main_steps.rb:5
 
@@ -74,7 +73,6 @@ Feature: Lazy Run per Scenario
       
       """
 
-  @in-progress
   Scenario: Edit source file covered by the background of a feature
     Given I have run cucover features/call_foo_from_background_then_bar.feature
     When I edit the source file lib/foo.rb
@@ -94,7 +92,6 @@ Feature: Lazy Run per Scenario
       
       """
 
-  @in-progress
   Scenario: Edit source file covered by a scenario with a background
     Given I have run cucover features/call_foo_from_background_then_bar_then_baz.feature
     When I edit the source file lib/bar.rb
@@ -115,7 +112,7 @@ Feature: Lazy Run per Scenario
           When I call Baz         # features/step_definitions/main_steps.rb:9
 
       2 scenarios
-      1 skipped step
+      2 skipped steps
       2 passed steps
       
       """

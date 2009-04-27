@@ -61,3 +61,8 @@ Cucover::Rake::Task.new(:failed) do |t|
   t.pretty!
   t.feature_pattern = rerun if rerun
 end
+
+Cucumber::Rake::Task.new(:coverage) do |t|
+  t.rcov = true
+  t.rcov_opts = %w{--exclude osx\/objc,gems\/,spec\/}
+end

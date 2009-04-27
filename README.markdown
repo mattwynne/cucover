@@ -34,6 +34,8 @@ To run your features lazily, just use the cucover binary instead of cucumber. Us
   * This is very new and experimental. There may be bugs. Feedback is welcome via github messages.
 
 ## Todo
+  * Test per-scenario stuff with a Scenario Outline
+  * Run code coverage and remove any slop following refactoring
   * One or two of the features for Cucuover itself seem to flicker (intermittently fail). This is probably due to timing issues when figuring out if a file is dirty.
   * Speed up the Rails test - maybe strip some guff out of the environment load?
   * I suspect it may do wierd things if you pass more than one visitor. Need to test for this.
