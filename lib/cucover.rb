@@ -43,10 +43,18 @@ module Cucover
     end
     
     def save
-      @cache.save normalized_files
+      @cache.save filter(normalized_files)
     end
     
     private
+    
+    def filter(files)
+      files.reject!{ |f| boring?(f) }
+    end
+    
+    def boring?(file)
+      (file.match /gem/) || (file.match /vendor/) || (file.match /lib\/ruby/)
+    end
     
     def normalized_files
       @covered_files.map{ |f| File.expand_path(f).gsub(/^#{Dir.pwd}\//, '') }
