@@ -26,9 +26,9 @@ Feature: Fail
             ./features/step_definitions/main_steps.rb:14:in `/^I divide by zero$/'
             features/fail.feature:7:in `When I divide by zero'
       
-      2 scenarios
+      2 scenarios (2 passed)
       1 failed step
-      1 passed step
+      1 step (1 passed)
       
       """
   
@@ -51,7 +51,7 @@ Feature: Fail
           ./features/step_definitions/main_steps.rb:14:in `/^I divide by zero$/'
           features/fail.feature:7:in `When I divide by zero'
     
-    1 scenario
+    1 scenario (1 passed)
     1 failed step
     
     """

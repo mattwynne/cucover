@@ -19,7 +19,7 @@ Feature: Lazy Run
         Scenario: Call Foo # features/call_foo.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:9
       
-      1 scenario
+      1 scenario (1 passed)
       1 skipped step
       
       """
@@ -36,7 +36,7 @@ Feature: Lazy Run
         Scenario: Call Foo # features/call_foo.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:9
       
-      1 scenario
+      1 scenario (1 passed)
       1 skipped step
       
       """  
@@ -51,8 +51,8 @@ Feature: Lazy Run
         Scenario: Call Foo # features/call_foo.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:9
 
-      1 scenario
-      1 passed step
+      1 scenario (1 passed)
+      1 step (1 passed)
       
       """
   
@@ -74,8 +74,8 @@ Feature: Lazy Run
           When I call Foo          # features/step_definitions/main_steps.rb:9
           And I call Bar           # features/step_definitions/main_steps.rb:9
 
-      2 scenarios
+      2 scenarios (2 passed)
       1 skipped step
-      2 passed steps
+      2 steps (2 passed)
       
       """

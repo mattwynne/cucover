@@ -20,7 +20,7 @@ Feature: Run
           When I call Foo          # features/step_definitions/main_steps.rb:9
           And I call Bar           # features/step_definitions/main_steps.rb:9
 
-      2 scenarios
-      3 passed steps
+      2 scenarios (2 passed)
+      3 steps (3 passed)
 
       """

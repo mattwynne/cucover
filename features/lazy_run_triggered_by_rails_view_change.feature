@@ -21,8 +21,8 @@ Feature: Lazy Run Triggered By Rails View Change
           When I go to /widgets                                # features/step_definitions/webrat_steps.rb:1
           Then I should see "Look at all these lovely widgets" # features/step_definitions/webrat_steps.rb:5
 
-      1 scenario
-      2 skipped steps
+      1 scenario (1 skipped)
+      2 steps (2 skipped)
       
       """
       
@@ -37,7 +37,7 @@ Feature: Lazy Run Triggered By Rails View Change
           When I go to /widgets                                # features/step_definitions/webrat_steps.rb:1
           Then I should see "Look at all these lovely widgets" # features/step_definitions/webrat_steps.rb:5
 
-      1 scenario
-      2 passed steps
+      1 scenario (1 passed)
+      2 steps (2 passed)
       
       """

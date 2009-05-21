@@ -24,7 +24,7 @@ Feature: Lazy Run per Scenario
         Scenario: Call Bar # features/call_foo_then_bar.feature:6
           When I call Bar  # features/step_definitions/main_steps.rb:9
 
-      2 scenarios
+      2 scenarios (2 passed)
       2 skipped steps
       
       """
@@ -45,9 +45,9 @@ Feature: Lazy Run per Scenario
         Scenario: Call Bar # features/call_foo_then_bar.feature:6
           When I call Bar  # features/step_definitions/main_steps.rb:9
 
-      2 scenarios
+      2 scenarios (2 passed)
       1 skipped step
-      1 passed step
+      1 step (1 passed)
       
       """
   
@@ -68,7 +68,7 @@ Feature: Lazy Run per Scenario
         Scenario: Call Bar        # features/call_foo_from_background_then_bar.feature:6
           When I call Bar         # features/step_definitions/main_steps.rb:9
 
-      1 scenario
+      1 scenario (1 passed)
       2 skipped steps
       
       """
@@ -87,8 +87,8 @@ Feature: Lazy Run per Scenario
         Scenario: Call Bar        # features/call_foo_from_background_then_bar.feature:6
           When I call Bar         # features/step_definitions/main_steps.rb:9
 
-      1 scenario
-      2 passed steps
+      1 scenario (1 passed)
+      2 steps (2 passed)
       
       """
 
@@ -111,8 +111,8 @@ Feature: Lazy Run per Scenario
         Scenario: Call Baz        # features/call_foo_from_background_then_bar_then_baz.feature:9
           When I call Baz         # features/step_definitions/main_steps.rb:9
 
-      2 scenarios
+      2 scenarios (2 passed)
       2 skipped steps
-      2 passed steps
+      2 steps (2 passed)
       
       """
