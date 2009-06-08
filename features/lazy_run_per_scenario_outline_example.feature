@@ -17,13 +17,12 @@ Feature: Lazy Run per Scenario Outline Example
         Scenario Outline: Call Something # features/call_foo_then_bar_from_scenario_outline_examples.feature:3
           When I call <Code>             # features/step_definitions/main_steps.rb:9
 
-        Examples: 
-          | Code |
-          | Foo  |
-          | Bar  |
+          Examples: 
+            | Code |
+            | Foo  |
+            | Bar  |
 
-      2 scenarios
-      1 passed step
-      1 skipped step
+      2 scenarios (1 skipped, 1 passed)
+      1 steps (1 skipped, 1 passed)
       
       """
