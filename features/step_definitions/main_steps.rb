@@ -10,7 +10,7 @@ def within_examples_dir
 end
 
 Given /^I have run cucover (.*)$/ do |args|
-  When %{I run cucover "#{args}"}
+  When %{I run cucover #{args}}
 end
 
 Given /^the cache is clear$/ do
