@@ -1,11 +1,34 @@
 module Cucover
   class Store
+    def initialize
+      if File.exists?(data_file)
+        puts "reading #{data_file}"
+        File.open(data_file) do |f|
+          @recordings = Marshal.load(f)
+        end
+      else
+        puts "no data - starting with a blank slate"
+        @recordings = {}
+      end
+      at_exit do
+        File.open(data_file, 'w') do |file|
+          file.puts Marshal.dump(@recordings)
+        end
+      end
+    end
+    
     def keep(recording)
-      
+      @recordings[recording.file_colon_line] = recording.to_data
     end
     
     def fetch_recordings_covering(source_file)
       [ FakeRecording.new ]
+    end
+    
+    private
+    
+    def data_file
+      Dir.pwd + '/cucover.data'
     end
     
     class FakeRecording
