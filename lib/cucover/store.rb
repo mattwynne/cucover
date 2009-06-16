@@ -1,19 +1,10 @@
 module Cucover
   class Store
     def initialize
-      if File.exists?(data_file)
-        Cucover.logger.debug("Reading existing coverage data from #{data_file}")
-        File.open(data_file) do |f|
-          @recordings = Marshal.load(f)
-        end
-      else
-        Cucover.logger.debug("Starting with no existing coverage data.")
-        @recordings = {}
-      end
+      load_recordings
+      
       at_exit do
-        File.open(data_file, 'w') do |file|
-          file.puts Marshal.dump(@recordings)
-        end
+        save_recordings
       end
     end
     
@@ -28,6 +19,24 @@ module Cucover
     end
     
     private
+    
+    def save_recordings
+      File.open(data_file, 'w') do |file|
+        file.puts Marshal.dump(@recordings)
+      end
+    end
+    
+    def load_recordings
+      if File.exists?(data_file)
+        Cucover.logger.debug("Reading existing coverage data from #{data_file}")
+        File.open(data_file) do |f|
+          @recordings = Marshal.load(f)
+        end
+      else
+        Cucover.logger.debug("Starting with no existing coverage data.")
+        @recordings = {}
+      end
+    end
     
     def data_file
       Dir.pwd + '/cucover.data'

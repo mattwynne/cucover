@@ -239,8 +239,10 @@ end
 
 Before do |scenario_or_table_row|
   Cucover::Rails.patch_if_necessary  
-  
-  Cucover.start_recording(scenario_or_table_row)
+
+  announce "[ Cucover - Skipping clean scenario ]"
+  scenario_or_table_row.skip_invoke! 
+  # Cucover.start_recording(scenario_or_table_row)
 end
 
 After do

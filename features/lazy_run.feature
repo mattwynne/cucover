@@ -6,10 +6,10 @@ Feature: Lazy Run
   Background:
     Given the cache is clear
     And I am using the simple example app
-    And I have run cucover features/call_foo.feature
+    And I have run cucover -- features/call_foo.feature
   
   Scenario: Change nothing and run same feature again
-    When I run cucover features/call_foo.feature
+    When I run cucover -- features/call_foo.feature
     Then it should pass with:
       """
       Feature: Call Foo
@@ -26,7 +26,7 @@ Feature: Lazy Run
       
   Scenario: Change irrelevant source file and run same feature again
     When I edit the source file lib/bar.rb
-    When I run cucover features/call_foo.feature
+    When I run cucover -- features/call_foo.feature
     Then it should pass with:
       """
       Feature: Call Foo
@@ -43,7 +43,7 @@ Feature: Lazy Run
       
   Scenario: Touch feature file and run same feature again
     When I edit the source file features/call_foo.feature
-    And I run cucover features/call_foo.feature
+    And I run cucover -- features/call_foo.feature
     Then it should pass with:
       """
       Feature: Call Foo
@@ -58,7 +58,7 @@ Feature: Lazy Run
   
   Scenario: Touch one source file and try to run lots of features
     When I edit the source file lib/bar.rb
-    And I run cucover features/call_foo.feature features/call_foo_and_bar_together.feature
+    And I run cucover -- features/call_foo.feature features/call_foo_and_bar_together.feature
     Then it should pass with:
       """
       Feature: Call Foo
