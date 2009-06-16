@@ -8,8 +8,8 @@ Feature: Lazy Run per Scenario
     And I am using the simple example app
   
   Scenario: Change nothing and run same feature again
-    Given I have run cucover features/call_foo_then_bar.feature
-    When I run cucover features/call_foo_then_bar.feature
+    Given I have run cucover -- features/call_foo_then_bar.feature
+    When I run cucover -- features/call_foo_then_bar.feature
     Then it should pass with:
       """
       Feature: Call Foo then Bar
@@ -30,9 +30,9 @@ Feature: Lazy Run per Scenario
       """
 
   Scenario: Edit source file covered by only one scenario and run same feature again
-    Given I have run cucover features/call_foo_then_bar.feature
+    Given I have run cucover -- features/call_foo_then_bar.feature
     When I edit the source file lib/foo.rb
-    And I run cucover features/call_foo_then_bar.feature
+    And I run cucover -- features/call_foo_then_bar.feature
     Then it should pass with:
       """
       Feature: Call Foo then Bar
@@ -51,8 +51,8 @@ Feature: Lazy Run per Scenario
       """
   
   Scenario: Run a feature with a background twice
-    Given I have run cucover features/call_foo_from_background_then_bar.feature
-    When I run cucover features/call_foo_from_background_then_bar.feature
+    Given I have run cucover -- features/call_foo_from_background_then_bar.feature
+    When I run cucover -- features/call_foo_from_background_then_bar.feature
     Then it should pass with:
       """
       Feature: Call Foo from Background then Bar
@@ -73,9 +73,9 @@ Feature: Lazy Run per Scenario
       """
 
   Scenario: Edit source file covered by the background of a feature
-    Given I have run cucover features/call_foo_from_background_then_bar.feature
+    Given I have run cucover -- features/call_foo_from_background_then_bar.feature
     When I edit the source file lib/foo.rb
-    And I run cucover features/call_foo_from_background_then_bar.feature
+    And I run cucover -- features/call_foo_from_background_then_bar.feature
     Then it should pass with:
       """
       Feature: Call Foo from Background then Bar
@@ -92,9 +92,9 @@ Feature: Lazy Run per Scenario
       """
 
   Scenario: Edit source file covered by a scenario with a background
-    Given I have run cucover features/call_foo_from_background_then_bar_then_baz.feature
+    Given I have run cucover -- features/call_foo_from_background_then_bar_then_baz.feature
     When I edit the source file lib/bar.rb
-    And I run cucover features/call_foo_from_background_then_bar_then_baz.feature
+    And I run cucover -- features/call_foo_from_background_then_bar_then_baz.feature
     Then it should pass with:
       """
       Feature: Call Foo from Background then Bar then Baz

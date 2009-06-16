@@ -7,10 +7,10 @@ Feature: Lazy Run Triggered By Rails View Change
   Background:
     Given the cache is clear
     And I am using the rails example app
-    And I have run cucover features/see_widgets.feature
+    And I have run cucover -- features/see_widgets.feature
 
   Scenario: Change nothing and run cucover again
-    When I run cucover features/see_widgets.feature
+    When I run cucover -- features/see_widgets.feature
     Then it should pass with:
       """
       Feature: See widgets
@@ -28,7 +28,7 @@ Feature: Lazy Run Triggered By Rails View Change
       
   Scenario: Edit a view and run cucover again
     When I edit the source file app/views/widgets/index.html.erb
-    When I run cucover features/see_widgets.feature
+    When I run cucover -- features/see_widgets.feature
     Then it should pass with:
       """
       Feature: See widgets

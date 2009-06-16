@@ -6,7 +6,7 @@ Feature: Run
   Scenario: Run features, minimal output
     Given the cache is clear
     And I am using the simple example app
-    When I run cucover features/call_foo.feature features/call_foo_and_bar_together.feature
+    When I run cucover -- features/call_foo.feature features/call_foo_and_bar_together.feature
     Then it should pass with:
       """
       Feature: Call Foo
