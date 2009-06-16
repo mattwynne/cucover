@@ -2,12 +2,10 @@ module Cucover
   class Store
     def initialize
       if File.exists?(data_file)
-        puts "reading #{data_file}"
         File.open(data_file) do |f|
           @recordings = Marshal.load(f)
         end
       else
-        puts "no data - starting with a blank slate"
         @recordings = {}
       end
       at_exit do
@@ -22,22 +20,15 @@ module Cucover
     end
     
     def fetch_recordings_covering(source_file)
-      [ FakeRecording.new ]
+      @recordings.values.select do |recording|
+        recording.covers_file?(source_file)
+      end
     end
     
     private
     
     def data_file
       Dir.pwd + '/cucover.data'
-    end
-    
-    class FakeRecording
-      def feature_filename
-        "features/call_foo.feature"
-      end
-      def covers_line?(line_number)
-        true unless [5,6,7,8].include?(line_number)
-      end
     end
     
   end

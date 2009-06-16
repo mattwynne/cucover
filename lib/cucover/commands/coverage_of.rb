@@ -17,7 +17,7 @@ module Cucover
       end
       
       def coverage(line_number)
-        @recordings.select{ |r| r.covers_line?(line_number) }.map{ |r| r.feature_filename }
+        @recordings.select{ |r| r.covers_line?(@filespec, line_number) }.map{ |r| r.feature_filename }
       end
       
       def recordings

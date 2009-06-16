@@ -7,10 +7,13 @@ gem 'spicycode-rcov', '>=0.8.1.5.0'
 require 'rcov'
 require 'spec'
 
+require 'logging'
+
 $:.unshift(File.dirname(__FILE__)) 
 require 'cucover/commands/coverage_of'
 require 'cucover/commands/cucumber'
 require 'cucover/cli'
+require 'cucover/logging_config'
 require 'cucover/monkey'
 require 'cucover/rails'
 require 'cucover/recording'
@@ -218,6 +221,10 @@ module Cucover
       @current_recording = nil
     end
     
+    def logger
+      Logging::Logger['Cucover']
+    end
+        
     private
     
     def recording?

@@ -1,4 +1,6 @@
 .coverage
+*.data
+*.log
 *.gem
 rerun
 coverage
