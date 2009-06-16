@@ -12,7 +12,7 @@ Feature: Coverage Of
     When I run cucover --coverage-of lib/foo.rb
     Then it should pass with:
     """
-    1 features/call_foo.feature class Foo
+    1                           class Foo
     2 features/call_foo.feature   def execute
     3 features/call_foo.feature     true
     4 features/call_foo.feature   end
@@ -20,7 +20,7 @@ Feature: Coverage Of
     6                             def sloppy_method
     7                               1/0
     8                             end
-    9 features/call_foo.feature end
+    9                           end
     
     """
     

@@ -2,10 +2,12 @@ module Cucover
   class Store
     def initialize
       if File.exists?(data_file)
+        Cucover.logger.debug("Reading existing coverage data from #{data_file}")
         File.open(data_file) do |f|
           @recordings = Marshal.load(f)
         end
       else
+        Cucover.logger.debug("Starting with no existing coverage data.")
         @recordings = {}
       end
       at_exit do
