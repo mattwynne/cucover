@@ -4,7 +4,6 @@ Feature: Lazy Run
   I want to be able to run only the features that could have been affected by the changes I've made
   
   Background:
-    Given the cache is clear
     And I am using the simple example app
     And I have run cucover -- features/call_foo.feature
   

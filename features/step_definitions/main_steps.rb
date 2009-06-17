@@ -1,5 +1,6 @@
 Given /^I have run cucover (.*)$/ do |args|
   When %{I run cucover #{args}}
+  assert(@status == 0, @out)
 end
 
 Given /^I am using the (.*) example app$/ do |app_name|

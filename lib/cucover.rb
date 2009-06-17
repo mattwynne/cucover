@@ -13,12 +13,11 @@ $:.unshift(File.dirname(__FILE__))
 require 'cucover/commands/coverage_of'
 require 'cucover/commands/cucumber'
 require 'cucover/commands/show_recordings'
-require 'cucover/cli'
 require 'cucover/logging_config'
 require 'cucover/monkey'
 require 'cucover/rails'
 require 'cucover/recording'
-require 'cucover/store'
+require 'cucover/cli'
 
 # 
 # module Cucover
@@ -203,23 +202,23 @@ module Cucover
     def start_recording(scenario_or_table_row)
       raise("Already recording. Please call stop first.") if recording?
       
-      @current_recording = Recording.new(scenario_or_table_row)
-      @current_recording.start
+      @current_recorder = Recording::Recorder.new(scenario_or_table_row)
+      @current_recorder.start
     end
     
     def record_file(source_file)
-      @current_recording.record_file(source_file)
+      @current_recorder.record_file(source_file)
     end
     
     def record_exception(exception)
-      @current_recording.fail!(exception)
+      @current_recorder.fail!(exception)
     end
 
     def stop_recording
       return unless recording?
-      @current_recording.stop
-      store.keep(@current_recording)
-      @current_recording = nil
+      @current_recorder.stop
+      store.keep(@current_recorder.to_data)
+      @current_recorder = nil
     end
     
     def logger
@@ -229,11 +228,11 @@ module Cucover
     private
     
     def recording?
-      !!@current_recording
+      !!@current_recorder
     end
     
     def store
-      store ||= Store.new
+      store ||= Recording::Store.new
     end
   end
 end

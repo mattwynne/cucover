@@ -5,7 +5,7 @@ module Cucover
       
       def initialize(cli_args)
         @filespec = cli_args[1]
-        @store = Store.new
+        @store = ::Cucover::Recording::Store.new
       end
       
       def execute

@@ -2,7 +2,7 @@ module Cucover
   module Commands
     class ShowRecordings
       def initialize(cli_args)
-        @store = Store.new
+        @store = Cucover::Recording::Store.new
       end
       
       def execute

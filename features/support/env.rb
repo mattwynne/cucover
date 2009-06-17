@@ -1,5 +1,6 @@
 # require File.dirname(__FILE__) + '/../../lib/cucover'
 require 'spec'
+require 'test/unit/assertions'
 
 module CucoverHelper
   def clear_cache!
@@ -18,7 +19,7 @@ module CucoverHelper
   end
 end
 
-World CucoverHelper
+World CucoverHelper, Test::Unit::Assertions
 
 After do
   clear_cache!
