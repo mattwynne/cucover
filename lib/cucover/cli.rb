@@ -15,6 +15,8 @@ module Cucover
         Commands::Cucumber
       elsif @args.index('--coverage-of')
         Commands::CoverageOf
+      elsif @args.index('--show-recordings')
+        Commands::ShowRecordings
       else
         raise("Sorry: I don't understand these command line arguments: #{@args.inspect}. Soon I will say something more helpful here.")
       end

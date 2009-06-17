@@ -1,37 +1,46 @@
 module Cucover
   class Store
     def initialize
-      load_recordings
-      
       at_exit do
-        save_recordings
+        save_recordings if @dirty
       end
     end
     
     def keep(recording)
+      Cucover.logger.debug("Storing recording of #{recording.file_colon_line}.")
+      ensure_recordings_loaded!
       @recordings[recording.file_colon_line] = recording.to_data
+      @dirty = true
     end
     
-    def fetch_recordings_covering(source_file)
-      @recordings.values.select do |recording|
+    def recordings_covering(source_file)
+      recordings.select do |recording|
         recording.covers_file?(source_file)
       end
+    end
+    
+    def recordings
+      ensure_recordings_loaded!
+      @recordings.values
     end
     
     private
     
     def save_recordings
+      Cucover.logger.debug("Saving #{@recordings.length} recording(s) to #{data_file}")
       File.open(data_file, 'w') do |file|
         file.puts Marshal.dump(@recordings)
       end
     end
     
-    def load_recordings
+    def ensure_recordings_loaded!
+      return if @recordings
       if File.exists?(data_file)
         Cucover.logger.debug("Reading existing coverage data from #{data_file}")
         File.open(data_file) do |f|
           @recordings = Marshal.load(f)
         end
+        Cucover.logger.debug("Loaded #{@recordings.length} recording(s)")
       else
         Cucover.logger.debug("Starting with no existing coverage data.")
         @recordings = {}

@@ -12,6 +12,7 @@ require 'logging'
 $:.unshift(File.dirname(__FILE__)) 
 require 'cucover/commands/coverage_of'
 require 'cucover/commands/cucumber'
+require 'cucover/commands/show_recordings'
 require 'cucover/cli'
 require 'cucover/logging_config'
 require 'cucover/monkey'
@@ -240,9 +241,9 @@ end
 Before do |scenario_or_table_row|
   Cucover::Rails.patch_if_necessary  
 
-  announce "[ Cucover - Skipping clean scenario ]"
-  scenario_or_table_row.skip_invoke! 
-  # Cucover.start_recording(scenario_or_table_row)
+  # announce "[ Cucover - Skipping clean scenario ]"
+  # scenario_or_table_row.skip_invoke! 
+  Cucover.start_recording(scenario_or_table_row)
 end
 
 After do
