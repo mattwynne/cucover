@@ -1,5 +1,5 @@
 module Cucover
-  module Commands
+  module CliCommands
     class Cucumber
       def initialize(cli_args)
         @cli_args = cli_args

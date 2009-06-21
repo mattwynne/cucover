@@ -1,5 +1,5 @@
 module Cucover
-  module Commands
+  module CliCommands
     class ShowRecordings
       def initialize(cli_args)
         @store = Cucover::Recording::Store.new

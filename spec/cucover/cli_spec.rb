@@ -7,7 +7,7 @@ describe Cucover::Cli do
     end
     
     it "should create a CoverageOf command object and execute it" do
-      Cucover::Commands::CoverageOf.should_receive(:new).with(['--coverage-of', 'lib/foo.rb']).and_return(command = mock('command'))
+      Cucover::CliCommands::CoverageOf.should_receive(:new).with(['--coverage-of', 'lib/foo.rb']).and_return(command = mock('command'))
       command.should_receive(:execute)
       cli = Cucover::Cli.new(@args)
       cli.start

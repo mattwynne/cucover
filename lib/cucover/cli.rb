@@ -12,11 +12,11 @@ module Cucover
     
     def command_type
       if @args.index('--')
-        Commands::Cucumber
+        CliCommands::Cucumber
       elsif @args.index('--coverage-of')
-        Commands::CoverageOf
+        CliCommands::CoverageOf
       elsif @args.index('--show-recordings')
-        Commands::ShowRecordings
+        CliCommands::ShowRecordings
       else
         raise("Sorry: I don't understand these command line arguments: #{@args.inspect}. Soon I will say something more helpful here.")
       end

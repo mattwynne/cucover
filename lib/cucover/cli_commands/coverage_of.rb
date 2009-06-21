@@ -1,5 +1,5 @@
 module Cucover
-  module Commands
+  module CliCommands
     class CoverageOf
       CODE_COLUMN_WIDTH = 15
       
