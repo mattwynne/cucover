@@ -1,6 +1,8 @@
-Given /^I have run cucover (.*)$/ do |args|
+Given /^I have (tried to |)run cucover (.*)$/ do |tried, args|
   When %{I run cucover #{args}}
-  assert(@status == 0, @out)
+  if tried.blank?
+    assert(@status == 0, @out)
+  end
 end
 
 Given /^I am using the (.*) example app$/ do |app_name|

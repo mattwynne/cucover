@@ -12,15 +12,15 @@ module Cucover
     end
     
     def should_execute?
-      dirty?
+      dirty? or failed_on_last_run?
     end
     
     private
     
-    # def failed_on_last_run?
-    #   return false unless recording
-    #   recording.result_failed?
-    # end
+    def failed_on_last_run?
+      return false unless recording
+      recording.failed?
+    end
     
     def dirty?
       Cucover.logger.debug("Assuming dirty as no recording found") and return true unless recording

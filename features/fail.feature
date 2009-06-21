@@ -32,7 +32,7 @@ Feature: Fail
   
   Scenario: Run failing feature twice
     And I am using the simple example app
-    And I have run cucover -- features/fail.feature
+    And I have tried to run cucover -- features/fail.feature
     When I run cucover -- features/fail.feature
     Then it should fail with:
     """

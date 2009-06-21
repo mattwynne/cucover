@@ -2,8 +2,7 @@
 require 'spec'
 require 'test/unit/assertions'
 
-module CucoverHelper
-  
+module CucoverHelper  
   def edit(file)
     original_mtime = File.mtime(file) 
     FileUtils.touch(file)
@@ -14,7 +13,7 @@ module CucoverHelper
   def restore_file_mtimes
     return unless @edited_files
     @edited_files.each do |file, original_mtime|
-      `touch -t #{original_mtime.strftime('%Y%m%d%H%M.%S')} #{file}`
+      `touch -t #{original_mtime.strftime('%Y%m%d%H%M.%S')} #{examples_dir}/#{file}`
     end
   end
   
@@ -31,10 +30,13 @@ module CucoverHelper
   end
 
   def within_examples_dir
-    full_dir = File.expand_path(File.dirname(__FILE__) + "/../../examples/self_test/#{example_app}")
-    Dir.chdir(full_dir) do
+    Dir.chdir(examples_dir) do
       yield
     end
+  end
+  
+  def examples_dir
+    File.expand_path(File.dirname(__FILE__) + "/../../examples/self_test/#{example_app}")    
   end
 end
 

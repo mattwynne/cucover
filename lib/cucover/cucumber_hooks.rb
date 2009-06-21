@@ -13,6 +13,7 @@ end
 Cucover::Monkey.extend_every Cucumber::Ast::OutlineTable::ExampleRow => Cucover::ExampleRowExtensions
 
 Before do |scenario_or_table_row|
+  Cucover.logger.info("Starting #{scenario_or_table_row.class} #{scenario_or_table_row.file_colon_line}")
   Cucover::Rails.patch_if_necessary
   
   if Cucover::Controller[scenario_or_table_row].should_execute?    

@@ -1,6 +1,6 @@
 module Cucover
   module Recording
-    class Data < Struct.new(:file_colon_line, :additional_covered_files, :analyzer, :start_time, :end_time)
+    class Data < Struct.new(:file_colon_line, :exception, :additional_covered_files, :analyzer, :start_time, :end_time)
       def feature_filename
         file_colon_line.split(':').first
       end
@@ -15,6 +15,10 @@ module Cucover
       
       def covered_files
         @covered_files ||= analyzed_covered_files + additional_covered_files
+      end
+      
+      def failed?
+        !!exception
       end
       
       private

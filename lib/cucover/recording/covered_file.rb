@@ -28,7 +28,7 @@ module Cucover
       def dirty?
         Cucover.logger.debug("#{file}     last modified at #{File.mtime(@full_filename)}")
         Cucover.logger.debug("#{file} recording started at #{@recording.start_time}")
-        result = File.mtime(@full_filename).to_s >= @recording.start_time.to_s
+        result = File.mtime(@full_filename).to_i >= @recording.start_time.to_i
         Cucover.logger.debug(result ? "dirty" : "not dirty")
         result
       end

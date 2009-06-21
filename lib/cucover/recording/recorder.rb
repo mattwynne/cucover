@@ -29,6 +29,7 @@ module Cucover
       def to_data
         Data.new(
           @scenario_or_table_row.file_colon_line, 
+          @scenario_or_table_row.exception,
           @additional_covered_files, 
           @analyzer, 
           @start_time, @end_time)

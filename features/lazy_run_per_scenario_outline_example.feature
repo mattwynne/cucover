@@ -9,19 +9,23 @@ Feature: Lazy Run per Scenario Outline Example
   
   Scenario: Edit a source file that should trigger just one of the examples to be run
     When I edit the source file lib/bar.rb
+    And I run cucover -- -q features/call_foo_then_bar_from_scenario_outline_examples.feature
     Then it should pass with:
       """
       Feature: Call Foo then Bar from Scenario Outline Examples
 
-        Scenario Outline: Call Something # features/call_foo_then_bar_from_scenario_outline_examples.feature:3
-          When I call <Code>             # features/step_definitions/main_steps.rb:9
+        Scenario Outline: Call Something
+          When I call <Code>
 
           Examples: 
             | Code |
-            | Foo  |
+            |
+      [ Cucover - Skipping clean scenario ]
+       Foo  |
             | Bar  |
 
       2 scenarios (1 skipped, 1 passed)
-      1 steps (1 skipped, 1 passed)
+      2 steps (1 skipped, 1 passed)
       
       """
+    # Which is a bit ugly, but that's down the the formatter
