@@ -17,6 +17,7 @@ How does it decide whether it needs to run a scenario? Every time you run a feat
   * Patches Rails to also map scenarios to covered .erb view templates
   * Shows skipped Scenarios, for confidence
   * Re-runs failing features, even when nothing has changed, for that good old red-bar feel.
+  * Allows you to see which lines of a source file are tested by which scenarios
 
 ## Installation and Usage
 
@@ -26,7 +27,17 @@ Something like this, as I haven't figured out the dependencies yet for the gem:
     sudo gem install spicycode-rcov
     sudo gem install mattwynne-cucover
 
-To run your features lazily, just use the cucover binary instead of cucumber. Use the same command-line options as usual, they are all passed directly to cucumber. No magic to see here, just a little gentle duck-punching.
+To run your features lazily, use the cucover binary instead of cucumber:
+
+    cucover -- features/lamb_chops.feature
+    
+To see what Cucover has already recorded (in the cucover.data file):
+
+    cucover --show-recordings
+    
+To find out which tests cover which lines of a given source file:
+
+    cucover --coverage_of path/to/some_source_file.rb
 
 ## Limitations
 
@@ -34,12 +45,10 @@ To run your features lazily, just use the cucover binary instead of cucumber. Us
   * This is very new and experimental. There may be bugs. Feedback is welcome via github messages.
 
 ## Todo
-  * Test per-scenario stuff with a Scenario Outline
+  * Proper args parsing and command-line help
   * Run code coverage and remove any slop following refactoring
-  * One or two of the features for Cucuover itself seem to flicker (intermittently fail). This is probably due to timing issues when figuring out if a file is dirty.
   * Speed up the Rails test - maybe strip some guff out of the environment load?
-  * I suspect it may do wierd things if you pass more than one visitor. Need to test for this.
-  * Consider extending Cucumber::Parser::Filter and using that to stop clean scenarios from even being loaded into the AST for the test run instead of the current mechanism.
+  * Speed up the whole thing by only writing the recordings to disk when the process exits
     
 ## Similar 'Selective Testing' Tools
 
