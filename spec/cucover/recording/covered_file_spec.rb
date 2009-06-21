@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
-module Cucover::Recording
+class Cucover::Recording
   describe CoveredFile do
     describe "with a marked info" do
       before(:each) do

@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.dirname(__FILE__) + '/../spec_helper'
 
-module Cucover::Recording
+module Cucover
   describe Store do
     before(:each) do
       @cache = mock('cache', :load => nil)

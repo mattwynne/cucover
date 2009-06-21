@@ -1,14 +1,8 @@
 module Cucover
   class Controller
-    class << self
-      def [](scenario_or_table_row)
-        new(scenario_or_table_row.file_colon_line)
-      end
-    end
-    
-    def initialize(file_colon_line)
+    def initialize(file_colon_line, store)
       @file_colon_line = file_colon_line
-      @store = Recording::Store.new
+      @store = store
     end
     
     def should_execute?

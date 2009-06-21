@@ -16,8 +16,8 @@ Before do |scenario_or_table_row|
   Cucover.logger.info("Starting #{scenario_or_table_row.class} #{scenario_or_table_row.file_colon_line}")
   Cucover::Rails.patch_if_necessary
   
-  if Cucover::Controller[scenario_or_table_row].should_execute?    
-    Cucover::Recording.start(scenario_or_table_row)
+  if Cucover.should_execute?(scenario_or_table_row)
+    Cucover.start_recording!(scenario_or_table_row)
   else
     announce "[ Cucover - Skipping clean scenario ]"
     scenario_or_table_row.skip_invoke!
@@ -25,5 +25,5 @@ Before do |scenario_or_table_row|
 end
 
 After do
-  Cucover::Recording.stop
+  Cucover.stop_recording!
 end
