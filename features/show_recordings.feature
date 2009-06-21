@@ -16,11 +16,13 @@ Feature: Show Recordings
     features/call_foo.feature:3
       features/step_definitions/main_steps.rb:6:10
       lib/foo.rb:2:3:4
+      features/call_foo.feature:<unknown lines>
     
     features/call_foo_and_bar_together.feature:3
       lib/foo.rb:2:3:4
       features/step_definitions/main_steps.rb:6:10
       lib/bar.rb:2:3:4
-
+      features/call_foo_and_bar_together.feature:<unknown lines>
+    
     
     """

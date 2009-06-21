@@ -4,8 +4,7 @@ Feature: Lazy Run per Scenario Outline Example
   I want to run only the examples that could fail
   
   Background:
-    Given the cache is clear
-    And I am using the simple example app
+    Given I am using the simple example app
     And I have run cucover -- features/call_foo_then_bar_from_scenario_outline_examples.feature
   
   Scenario: Edit a source file that should trigger just one of the examples to be run

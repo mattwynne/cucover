@@ -17,74 +17,12 @@ require 'cucover/logging_config'
 require 'cucover/monkey'
 require 'cucover/rails'
 require 'cucover/recording'
+require 'cucover/controller'
 require 'cucover/cli'
 
 # 
 # module Cucover
-#   class TestIdentifier < Struct.new(:file, :line)
-#     def initialize(file_colon_line)
-#       file, line = file_colon_line.split(':')
-#       super(file, line)
-#       self.freeze
-#     end
-#     
-#     def to_s
-#       "#{file}:#{line.to_s}"
-#     end
-#   end
 #   
-#   class Executor
-#     def initialize(test_identifier)
-#       @source_files_cache = SourceFileCache.new(test_identifier)      
-#       @status_cache       = StatusCache.new(test_identifier)
-#     end
-#     
-#     def should_execute?
-#       dirty? || failed_on_last_run?
-#     end
-#     
-#     private
-#     
-#     def failed_on_last_run?
-#       return false unless @status_cache.exists?
-#       @status_cache.last_run_status == "failed"
-#     end
-#     
-#     def dirty?
-#       return true unless @source_files_cache.exists?
-#       @source_files_cache.any_dirty_files?
-#     end
-#   end
-#   
-#   class TestRun
-#     def initialize(test_identifier, visitor)
-#       @test_identifier, @visitor = test_identifier, visitor
-#       @coverage_recording = CoverageRecording.new(test_identifier)
-#       @status_cache       = StatusCache.new(test_identifier)
-#     end
-#     
-#     def record(source_file)
-#       @coverage_recording.record_file(source_file)
-#     end
-#     
-#     def fail!
-#       @failed = true
-#     end
-#     
-#     def watch(&block)
-#       record(@test_identifier.file)
-#       @coverage_recording.record_coverage(&block)
-#       @coverage_recording.save
-#       
-#       @status_cache.record(status)
-#     end
-#     
-#     private
-#     
-#     def status
-#       @failed ? :failed : :passed
-#     end
-#   end
 #   
 #   class << self
 #     def start_test(test_identifier, visitor, &block)
@@ -114,37 +52,6 @@ require 'cucover/cli'
 #     end
 #   end
 #   
-#   class Controller
-#     class << self
-#       def [](scenario)
-#         new(TestIdentifier.new(scenario.file_colon_line))
-#       end
-#     end
-#     
-#     def initialize(test_id)
-#       @test_id  = test_id
-#       @executor = Executor.new(test_id)
-#     end
-#     
-#     def should_skip?
-#       yield if (block_given? and !should_execute?)
-#       return !should_execute?
-#     end
-#     
-#     def should_execute?
-#       result = @executor.should_execute?      
-#       yield if block_given? and result
-#       result
-#     end
-#   end
-# 
-#   module RecordsCoverage
-#     def accept(visitor)
-#       Cucover.start_test(TestIdentifier.new(file_colon_line), visitor) do
-#         super
-#       end
-#     end
-#   end
 #   
 #   module ScenarioExtensions
 #     module SkipsStableTests    
@@ -199,52 +106,9 @@ require 'cucover/cli'
 
 module Cucover
   class << self
-    def start_recording(scenario_or_table_row)
-      raise("Already recording. Please call stop first.") if recording?
-      
-      @current_recorder = Recording::Recorder.new(scenario_or_table_row)
-      @current_recorder.start
-    end
-    
-    def record_file(source_file)
-      @current_recorder.record_file(source_file)
-    end
-    
-    def record_exception(exception)
-      @current_recorder.fail!(exception)
-    end
-
-    def stop_recording
-      return unless recording?
-      @current_recorder.stop
-      store.keep(@current_recorder.to_data)
-      @current_recorder = nil
-    end
-    
     def logger
       Logging::Logger['Cucover']
-    end
-        
-    private
-    
-    def recording?
-      !!@current_recorder
-    end
-    
-    def store
-      store ||= Recording::Store.new
-    end
+    end        
   end
-end
-
-Before do |scenario_or_table_row|
-  Cucover::Rails.patch_if_necessary  
-
-  # announce "[ Cucover - Skipping clean scenario ]"
-  # scenario_or_table_row.skip_invoke! 
-  Cucover.start_recording(scenario_or_table_row)
-end
-
-After do
-  Cucover.stop_recording
+  
 end

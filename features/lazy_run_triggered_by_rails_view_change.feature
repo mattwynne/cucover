@@ -5,7 +5,6 @@ Feature: Lazy Run Triggered By Rails View Change
   I want the changes I make to rails views to trigger cucover runs, the same as Ruby code does
   
   Background:
-    Given the cache is clear
     And I am using the rails example app
     And I have run cucover -- features/see_widgets.feature
 
@@ -15,9 +14,9 @@ Feature: Lazy Run Triggered By Rails View Change
       """
       Feature: See widgets
 
+        Scenario: See widgets                                  # features/see_widgets.feature:3
 
       [ Cucover - Skipping clean scenario ]
-        Scenario: See widgets                                  # features/see_widgets.feature:3
           When I go to /widgets                                # features/step_definitions/webrat_steps.rb:1
           Then I should see "Look at all these lovely widgets" # features/step_definitions/webrat_steps.rb:5
 

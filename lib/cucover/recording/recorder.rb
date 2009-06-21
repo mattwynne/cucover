@@ -9,7 +9,7 @@ module Cucover
 
       def record_file(source_file)
         unless @additional_covered_files.include?(source_file)
-          @additional_covered_files << source_file 
+          @additional_covered_files << source_file
         end
       end
     
@@ -23,6 +23,7 @@ module Cucover
         @analyzer.remove_hook
         Cucover.logger.info("Finished recording #{@scenario_or_table_row.file_colon_line}.")
         Cucover.logger.debug("Covered files: #{@analyzer.analyzed_files.join(',')}")
+        Cucover.logger.debug("Additional Covered files: #{@additional_covered_files.join(',')}")
       end
     
       def to_data

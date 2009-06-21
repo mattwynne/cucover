@@ -4,7 +4,6 @@ Feature: Fail
   I want to get useful information when a feature fails
   
   Scenario: Two features, one fails
-    Given the cache is clear
     And I am using the simple example app
     When I run cucover -- features/call_foo.feature features/fail.feature
     Then it should fail with:
@@ -32,7 +31,6 @@ Feature: Fail
       """
   
   Scenario: Run failing feature twice
-    Given the cache is clear
     And I am using the simple example app
     And I have run cucover -- features/fail.feature
     When I run cucover -- features/fail.feature

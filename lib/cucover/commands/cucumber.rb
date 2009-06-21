@@ -1,3 +1,4 @@
+require 'cucover/running'
 module Cucover
   module Commands
     class Cucumber
@@ -6,6 +7,7 @@ module Cucover
       end
       
       def execute
+        require 'cucover/running/cucumber_hooks'
         ARGV.replace cucumber_args
         Kernel.load ::Cucumber::BINARY
         ARGV.replace @cli_args

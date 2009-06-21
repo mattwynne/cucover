@@ -8,15 +8,15 @@ Feature: Lazy Run
     And I have run cucover -- features/call_foo.feature
   
   Scenario: Change nothing and run same feature again
-    When I run cucover -- features/call_foo.feature
+    When I run cucover -- -q features/call_foo.feature
     Then it should pass with:
       """
       Feature: Call Foo
-      
 
+        Scenario: Call Foo
+      
       [ Cucover - Skipping clean scenario ]
-        Scenario: Call Foo # features/call_foo.feature:3
-          When I call Foo  # features/step_definitions/main_steps.rb:9
+          When I call Foo
       
       1 scenario (1 skipped)
       1 step (1 skipped)
@@ -30,9 +30,9 @@ Feature: Lazy Run
       """
       Feature: Call Foo
       
+        Scenario: Call Foo # features/call_foo.feature:3
 
       [ Cucover - Skipping clean scenario ]
-        Scenario: Call Foo # features/call_foo.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:9
       
       1 scenario (1 skipped)
@@ -62,9 +62,9 @@ Feature: Lazy Run
       """
       Feature: Call Foo
       
+        Scenario: Call Foo # features/call_foo.feature:3
       
       [ Cucover - Skipping clean scenario ]
-        Scenario: Call Foo # features/call_foo.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:9
       
       Feature: Call Foo and Bar Together

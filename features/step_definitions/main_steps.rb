@@ -19,7 +19,7 @@ end
 
 When /^I edit the source file (.*)$/ do |source_file|
   within_examples_dir do
-    FileUtils.touch(source_file)
+    edit source_file
   end
 end
 
@@ -30,5 +30,5 @@ Then /^it should (pass|fail) with:$/ do |expected_status, expected_text|
     raise "Expected #{expected_status} but return code was #{@status}: #{@out}"
   end
   
-  @out.should == expected_text
+  strip_duration(@out).should == expected_text
 end

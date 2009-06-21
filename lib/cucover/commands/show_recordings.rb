@@ -13,7 +13,7 @@ module Cucover
         
         recordings.each do |recording|
           puts
-          puts recording.file_colon_line
+          puts "#{recording.file_colon_line}" # (#{recording.start_time.strftime('%Y-%m-%d %H:%M:%S')})
           recording.covered_files.each do |covered_file|
             puts "  #{covered_file.to_s}"
           end
@@ -22,7 +22,7 @@ module Cucover
       end
       
       def recordings
-        @recordings ||= @store.recordings.sort{ |x, y| x.end_time <=> y.end_time }
+        @recordings ||= @store.latest_recordings.sort{ |x, y| x.file_colon_line <=> y.file_colon_line }
       end
     end
   end

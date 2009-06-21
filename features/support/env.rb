@@ -3,6 +3,25 @@ require 'spec'
 require 'test/unit/assertions'
 
 module CucoverHelper
+  
+  def edit(file)
+    original_mtime = File.mtime(file) 
+    FileUtils.touch(file)
+    @edited_files ||= {}
+    @edited_files[file] = original_mtime
+  end
+  
+  def restore_file_mtimes
+    return unless @edited_files
+    @edited_files.each do |file, original_mtime|
+      `touch -t #{original_mtime.strftime('%Y%m%d%H%M.%S')} #{file}`
+    end
+  end
+  
+  def strip_duration(s)
+    s.gsub(/^\d+m\d+\.\d+s\n/m, "")
+  end
+  
   def clear_cache!
     `find examples -name cucover.data | xargs rm -rf`
   end
@@ -23,4 +42,5 @@ World CucoverHelper, Test::Unit::Assertions
 
 After do
   clear_cache!
+  restore_file_mtimes
 end

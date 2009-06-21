@@ -13,7 +13,7 @@ module Cucover
   
     module RecordsRenders
       def render
-        Cucover.record(@filename)
+        Cucover::Recording.record_file(@filename)
         super
       end
     end

@@ -4,8 +4,7 @@ Feature: Lazy Run per Scenario
   I want to skip the scenarios that don't need to be run
   
   Background:
-    Given the cache is clear
-    And I am using the simple example app
+    Given I am using the simple example app
   
   Scenario: Change nothing and run same feature again
     Given I have run cucover -- features/call_foo_then_bar.feature
@@ -14,14 +13,14 @@ Feature: Lazy Run per Scenario
       """
       Feature: Call Foo then Bar
 
+        Scenario: Call Foo # features/call_foo_then_bar.feature:3
 
       [ Cucover - Skipping clean scenario ]
-        Scenario: Call Foo # features/call_foo_then_bar.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:9
 
+        Scenario: Call Bar # features/call_foo_then_bar.feature:6
 
       [ Cucover - Skipping clean scenario ]
-        Scenario: Call Bar # features/call_foo_then_bar.feature:6
           When I call Bar  # features/step_definitions/main_steps.rb:9
 
       2 scenarios (2 skipped)
@@ -40,9 +39,9 @@ Feature: Lazy Run per Scenario
         Scenario: Call Foo # features/call_foo_then_bar.feature:3
           When I call Foo  # features/step_definitions/main_steps.rb:9
 
+        Scenario: Call Bar # features/call_foo_then_bar.feature:6
 
       [ Cucover - Skipping clean scenario ]
-        Scenario: Call Bar # features/call_foo_then_bar.feature:6
           When I call Bar  # features/step_definitions/main_steps.rb:9
 
       2 scenarios (1 skipped, 1 passed)
@@ -57,13 +56,11 @@ Feature: Lazy Run per Scenario
       """
       Feature: Call Foo from Background then Bar
 
-      
-      [ Cucover - Skipping background for clean feature ]
         Background:               # features/call_foo_from_background_then_bar.feature:3
+      
+      [ Cucover - Skipping clean scenario ]
           Given I have called Foo # features/step_definitions/main_steps.rb:5
 
-
-      [ Cucover - Skipping clean scenario ]
         Scenario: Call Bar        # features/call_foo_from_background_then_bar.feature:6
           When I call Bar         # features/step_definitions/main_steps.rb:9
 
@@ -105,9 +102,9 @@ Feature: Lazy Run per Scenario
         Scenario: Call Bar        # features/call_foo_from_background_then_bar_then_baz.feature:6
           When I call Bar         # features/step_definitions/main_steps.rb:9
       
+        Scenario: Call Baz        # features/call_foo_from_background_then_bar_then_baz.feature:9
       
       [ Cucover - Skipping clean scenario ]
-        Scenario: Call Baz        # features/call_foo_from_background_then_bar_then_baz.feature:9
           When I call Baz         # features/step_definitions/main_steps.rb:9
 
       2 scenarios (1 skipped, 1 passed)

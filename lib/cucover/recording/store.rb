@@ -1,138 +1,80 @@
 module Cucover
   module Recording
     class Store
-      def initialize
-        at_exit do
-          save_recordings if @dirty
-        end
+      def initialize(cache = DiskCache.new)
+        @cache = cache
+      end
+      
+      def latest_recordings
+        recordings.keys.map{ |file_colon_line| latest_recording(file_colon_line) }
       end
     
-      def keep(recorder_data)
-        Cucover.logger.debug("Storing recording of #{recorder_data.file_colon_line}.")
-        ensure_recordings_loaded!
-        @recordings[recorder_data.file_colon_line] = recorder_data
-        @dirty = true
+      def latest_recording(file_colon_line)
+        recordings[file_colon_line].sort{ |x, y| x.end_time <=> y.end_time }.last
+      end
+    
+      def keep(recording_data)
+        Cucover.logger.debug("Storing recording of #{recording_data.file_colon_line}")
+        recordings[recording_data.file_colon_line] << recording_data
+        @cache.save(@recordings)
       end
     
       def recordings_covering(source_file)
-        recordings.select do |recording|
-          recording.covers_file?(source_file)
-        end
+        latest_recordings.select { |r| r.covers_file?(source_file) }
       end
     
       def recordings
         ensure_recordings_loaded!
-        @recordings.values
+        @recordings
       end
     
       private
     
-      def save_recordings
-        Cucover.logger.debug("Saving #{@recordings.length} recording(s) to #{data_file}")
-        File.open(data_file, 'w') do |file|
-          file.puts Marshal.dump(@recordings)
-        end
-      end
-    
       def ensure_recordings_loaded!
         return if @recordings
-        if File.exists?(data_file)
-          Cucover.logger.debug("Reading existing coverage data from #{data_file}")
-          File.open(data_file) do |f|
-            @recordings = Marshal.load(f)
-          end
+        
+        if @recordings = @cache.load
           Cucover.logger.debug("Loaded #{@recordings.length} recording(s)")
         else
           Cucover.logger.debug("Starting with no existing coverage data.")
-          @recordings = {}
+          @recordings = Recordings.new
         end
       end
-    
-      def data_file
-        Dir.pwd + '/cucover.data'
+      
+      class Recordings < Hash
+        def [](key)
+          self[key] = [] if super.nil?
+          super
+        end        
+        
+        def dump
+          dump = []
+          each do |file_colon_line, recordings|
+            dump << "#{file_colon_line} #{recordings.map{ |r| r.to_s }}"
+          end
+          dump
+        end
       end
-    
+      
+      class DiskCache
+        def save(recordings)
+          Cucover.logger.debug("Saving #{recordings.length} recording(s) to #{data_file}")
+          File.open(data_file, 'w') { |f| f.puts Marshal.dump(recordings) }
+        end
+        
+        def load
+          return unless File.exists?(data_file)
+          
+          Cucover.logger.debug("Reading existing coverage data from #{data_file}")
+          File.open(data_file) { |f| Marshal.load(f) }
+        end
+        
+        private
+        
+        def data_file
+          Dir.pwd + '/cucover.data'
+        end
+      end
     end
   end
 end
-
-  #   class Cache
-  #     def initialize(test_identifier)
-  #       @test_identifier = test_identifier
-  #     end
-  #     
-  #     def exists?
-  #       File.exist?(cache_file)
-  #     end
-  #     
-  #     private
-  #     
-  #     def cache_file
-  #       cache_folder + '/' + cache_filename
-  #     end
-  #     
-  #     def cache_folder
-  #       @test_identifier.file.gsub(/([^\/]*\.feature)/, ".coverage/\\1/#{@test_identifier.line.to_s}")
-  #     end
-  #     
-  #     def time
-  #       File.mtime(cache_file)
-  #     end
-  # 
-  #     def write_to_cache
-  #       FileUtils.mkdir_p File.dirname(cache_file)
-  #       File.open(cache_file, "w") do |file|
-  #         yield file
-  #       end
-  #     end
-  #     
-  #     def cache_content
-  #       File.readlines(cache_file)
-  #     end
-  #   end
-  #   
-  #   class StatusCache < Cache
-  #     def last_run_status
-  #       cache_content.to_s.strip
-  #     end
-  #     
-  #     def record(status)
-  #       write_to_cache do |file|
-  #         file.puts status
-  #       end
-  #     end
-  #     
-  #     private
-  # 
-  #     def cache_filename
-  #       'last_run_status'
-  #     end
-  #   end
-  #   
-  #   class SourceFileCache < Cache
-  #     def save(analyzed_files)
-  #       write_to_cache do |file|
-  #         file.puts analyzed_files
-  #       end
-  #     end
-  #     
-  #     def any_dirty_files?
-  #       not dirty_files.empty?
-  #     end
-  #     
-  #     private
-  #     
-  #     def cache_filename
-  #       'covered_source_files'
-  #     end
-  # 
-  #     def source_files
-  #       cache_content
-  #     end
-  # 
-  #     def dirty_files
-  #       source_files.select do |source_file|
-  #         !File.exist?(source_file.strip) or (File.mtime(source_file.strip) >= time)
-  #       end
-  #     end
-  #   end
