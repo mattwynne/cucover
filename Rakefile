@@ -66,3 +66,21 @@ Cucumber::Rake::Task.new(:coverage) do |t|
   t.rcov = true
   t.rcov_opts = %w{--exclude osx\/objc,gems\/,spec\/}
 end
+
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gemspec|
+    gemspec.name = "cucover"
+    gemspec.summary = "Lazy coverage-aware running of Cucumber acceptance tests"
+    gemspec.email = "matt@mattwynne.net"
+    gemspec.homepage = "http://github.com/mattwynne/cucover/"
+    gemspec.description = "Lazy coverage-aware running of Cucumber acceptance tests"
+    gemspec.authors = ["Matt Wynne"]
+    
+    gemspec.add_dependency('cucumber',        '>= 0.3.11')
+    gemspec.add_dependency('relevance-rcov',  '>= 0.8.3.4')
+    gemspec.add_dependency('logging',         '>= 0.9.7')
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+end
