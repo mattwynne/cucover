@@ -79,7 +79,7 @@ begin
     
     gemspec.add_dependency('cucumber',        '>= 0.3.11')
     gemspec.add_dependency('relevance-rcov',  '>= 0.8.3.4')
-    gemspec.add_dependency('logging',         '>= 0.9.7')
+    gemspec.add_dependency('logging',         '>= 1.1.4')
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"

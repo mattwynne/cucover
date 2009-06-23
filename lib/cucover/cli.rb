@@ -13,6 +13,8 @@ module Cucover
     def command_type
       if @args.index('--')
         CliCommands::Cucumber
+      elsif @args.index('--version')
+        CliCommands::Version
       elsif @args.index('--coverage-of')
         CliCommands::CoverageOf
       elsif @args.index('--show-recordings')
