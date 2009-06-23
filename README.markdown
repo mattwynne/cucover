@@ -21,11 +21,7 @@ How does it decide whether it needs to run a scenario? Every time you run a feat
 
 ## Installation and Usage
 
-Something like this, as I haven't figured out the dependencies yet for the gem:
-
-    sudo gem install cucumber
-    sudo gem install spicycode-rcov
-    sudo gem install mattwynne-cucover
+    sudo gem install mattwynne-cucover --source http://gems.github.com
 
 To run your features lazily, use the cucover binary instead of cucumber:
 
