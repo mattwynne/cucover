@@ -42,9 +42,10 @@ To find out which tests cover which lines of a given source file:
 
 ## Todo
   * Proper args parsing and command-line help
+  * Work on a way to include coverage from out-of-process ruby code run during a test
+  * Speed up the whole thing by only writing the recordings to disk when the process exits
   * Run code coverage and remove any slop following refactoring
   * Speed up the Rails test - maybe strip some guff out of the environment load?
-  * Speed up the whole thing by only writing the recordings to disk when the process exits
     
 ## Similar 'Selective Testing' Tools
 
