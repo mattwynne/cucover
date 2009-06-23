@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{cucover}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matt Wynne"]
-  s.date = %q{2009-06-22}
+  s.date = %q{2009-06-23}
   s.default_executable = %q{cucover}
   s.description = %q{Lazy coverage-aware running of Cucumber acceptance tests}
   s.email = %q{matt@mattwynne.net}
@@ -174,6 +174,7 @@ Gem::Specification.new do |s|
      "lib/cucover/cli_commands/coverage_of.rb",
      "lib/cucover/cli_commands/cucumber.rb",
      "lib/cucover/cli_commands/show_recordings.rb",
+     "lib/cucover/cli_commands/version.rb",
      "lib/cucover/controller.rb",
      "lib/cucover/cucumber_hooks.rb",
      "lib/cucover/logging_config.rb",
@@ -291,15 +292,15 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<cucumber>, [">= 0.3.11"])
       s.add_runtime_dependency(%q<relevance-rcov>, [">= 0.8.3.4"])
-      s.add_runtime_dependency(%q<logging>, [">= 0.9.7"])
+      s.add_runtime_dependency(%q<logging>, [">= 1.1.4"])
     else
       s.add_dependency(%q<cucumber>, [">= 0.3.11"])
       s.add_dependency(%q<relevance-rcov>, [">= 0.8.3.4"])
-      s.add_dependency(%q<logging>, [">= 0.9.7"])
+      s.add_dependency(%q<logging>, [">= 1.1.4"])
     end
   else
     s.add_dependency(%q<cucumber>, [">= 0.3.11"])
     s.add_dependency(%q<relevance-rcov>, [">= 0.8.3.4"])
-    s.add_dependency(%q<logging>, [">= 0.9.7"])
+    s.add_dependency(%q<logging>, [">= 1.1.4"])
   end
 end
