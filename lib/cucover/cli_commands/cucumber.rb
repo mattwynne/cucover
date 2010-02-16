@@ -6,9 +6,17 @@ module Cucover
       end
       
       def execute
+        require 'rubygems'
+        require 'cucumber'
+
+        step_mother = ::Cucumber::StepMother.new
+        step_mother.load_programming_language('rb')
         require 'cucover/cucumber_hooks'
         ARGV.replace cucumber_args
-        Kernel.load ::Cucumber::BINARY
+
+        ::Cucumber::Cli::Main.new(ARGV).execute!(step_mother)
+        # Kernel.load ::Cucumber::BINARY
+
         ARGV.replace @cli_args
       end
       
