@@ -11,7 +11,7 @@ module Cucover
         @additional_covered_files << source_file
       end
     end
-  
+
     def start!
       @start_time = Time.now
       @analyzer.install_hook
@@ -24,13 +24,13 @@ module Cucover
       Cucover.logger.debug("Covered files: #{@analyzer.analyzed_files.join(',')}")
       Cucover.logger.debug("Additional Covered files: #{@additional_covered_files.join(',')}")
     end
-  
+
     def recording
       Recording.new(
-        @scenario_or_table_row.file_colon_line, 
+        @scenario_or_table_row.file_colon_line,
         @scenario_or_table_row.exception,
-        @additional_covered_files, 
-        @analyzer, 
+        @additional_covered_files,
+        @analyzer,
         @start_time, @end_time)
     end
   end

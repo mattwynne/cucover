@@ -2,7 +2,7 @@ Feature: Run
   In order to trust cucover and not have to switch between testing tools
   As a developer
   I want to be able to run features and get useful feedback through cucover
-  
+
   Scenario: Run features, minimal output
     Given I am using the simple example app
     When I run cucover -- features/call_foo.feature features/call_foo_and_bar_together.feature

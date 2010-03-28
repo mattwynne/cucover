@@ -32,5 +32,5 @@ Then /^it should (pass|fail) with:$/ do |expected_status, expected_text|
     raise "Expected #{expected_status} but return code was #{@status}: #{@out}"
   end
   
-  strip_duration(@out).should == expected_text
+  strip_trailing_spaces(strip_duration(@out)).should == expected_text
 end
