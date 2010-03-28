@@ -1,5 +1,5 @@
 module Cucover
-  module FeatureElement
+  module FeatureElementExtensions
     def reset_skipped_steps!
       return unless @steps
       @steps.each do |step|
@@ -10,9 +10,9 @@ module Cucover
 end
 
 module Cucover
-  include FeatureElement
-
   module ExampleRowExtensions
+    include FeatureElementExtensions
+
     def file_colon_line
       "#{file}:#{line}"
     end
@@ -23,7 +23,7 @@ module Cucover
   end
 end
 
-Cucover::Monkey.extend_every Cucumber::Ast::Scenario => Cucover::FeatureElement
+Cucover::Monkey.extend_every Cucumber::Ast::Scenario => Cucover::FeatureElementExtensions
 Cucover::Monkey.extend_every Cucumber::Ast::OutlineTable::ExampleRow => Cucover::ExampleRowExtensions
 
 Before do |scenario_or_table_row|
