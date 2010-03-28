@@ -1,4 +1,17 @@
 module Cucover
+  module FeatureElement
+    def reset_skipped_steps!
+      return unless @steps
+      @steps.each do |step|
+        step.instance_variable_set("@skip_invoke", nil)
+      end
+    end
+  end
+end
+
+module Cucover
+  include FeatureElement
+
   module ExampleRowExtensions
     def file_colon_line
       "#{file}:#{line}"
@@ -10,18 +23,11 @@ module Cucover
   end
 end
 
+Cucover::Monkey.extend_every Cucumber::Ast::Scenario => Cucover::FeatureElement
 Cucover::Monkey.extend_every Cucumber::Ast::OutlineTable::ExampleRow => Cucover::ExampleRowExtensions
 
-# Fragile and Ugly
-# skip_invoke will skip all scenarios for a feature
-# Ensure we reset skipped status on steps.
-def reset_skipped_steps!(feature_element)
-  steps = feature_element.instance_variable_get("@steps")
-  steps.each { |step| step.instance_variable_set("@skip_invoke", nil) } if steps
-end
-
 Before do |scenario_or_table_row|
-  reset_skipped_steps!(scenario_or_table_row)
+  scenario_or_table_row.reset_skipped_steps!
 
   Cucover.logger.info("Starting #{scenario_or_table_row.class} #{scenario_or_table_row.file_colon_line}")
   Cucover::Rails.patch_if_necessary
