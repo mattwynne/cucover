@@ -13,6 +13,8 @@ require 'cucover/recording'
 require 'cucover/recorder'
 require 'cucover/store'
 
+require 'at_exit_hook'
+
 module Cucover
   class << self
     def logger

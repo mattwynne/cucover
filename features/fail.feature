@@ -24,6 +24,9 @@ Feature: Fail
             ./features/step_definitions/main_steps.rb:14:in `/'
             ./features/step_definitions/main_steps.rb:14:in `/^I divide by zero$/'
             features/fail.feature:7:in `When I divide by zero'
+
+      Failing Scenarios:
+      cucumber features/fail.feature:6 # Scenario: Do something stupid
       
       2 scenarios (1 failed, 1 passed)
       2 steps (1 failed, 1 passed)
@@ -47,6 +50,9 @@ Feature: Fail
           ./features/step_definitions/main_steps.rb:14:in `/'
           ./features/step_definitions/main_steps.rb:14:in `/^I divide by zero$/'
           features/fail.feature:7:in `When I divide by zero'
+
+    Failing Scenarios:
+    cucumber features/fail.feature:6 # Scenario: Do something stupid
     
     1 scenario (1 failed)
     1 step (1 failed)
