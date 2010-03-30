@@ -63,3 +63,7 @@ To find out which tests cover which lines of a given source file:
   * JUnitMax
     * a selective testing tool by [Kent Beck](http://www.threeriversinstitute.org/blog)
     * http://junitmax.com/
+
+## Authors
+* Matt Wynne 
+* Joseph Wilk
