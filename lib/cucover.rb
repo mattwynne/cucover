@@ -1,4 +1,4 @@
-$:.unshift(File.dirname(__FILE__)) 
+$:.unshift(File.dirname(__FILE__))
 require 'dependencies'
 require 'cucover/logging_config'
 require 'cucover/cli_commands/coverage_of'
@@ -12,6 +12,8 @@ require 'cucover/rails'
 require 'cucover/recording'
 require 'cucover/recorder'
 require 'cucover/store'
+require 'cucover/line_numbers'
+
 
 require 'at_exit_hook'
 
@@ -20,11 +22,11 @@ module Cucover
     def logger
       Logging::Logger['Cucover']
     end
-    
+
     def should_execute?(scenario_or_table_row)
       controller(scenario_or_table_row).should_execute?
     end
-    
+
     def start_recording!(scenario_or_table_row)
       raise("Already recording. Please call stop first.") if recording?
 
@@ -40,24 +42,24 @@ module Cucover
       store.keep!(@current_recorder.recording)
       @current_recorder = nil
     end
-    
+
     def record_file(source_file)
       Cucover.logger.debug("Recording extra source file #{source_file}")
       @current_recorder.record_file!(source_file)
     end
-  
+
     private
-    
+
     def controller(scenario_or_table_row)
       Controller.new(scenario_or_table_row.file_colon_line, store)
     end
-    
+
     def recording?
       !!@current_recorder
     end
-  
+
     def store
       @store ||= Store.new
     end
-  end  
+  end
 end

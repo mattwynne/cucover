@@ -1,10 +1,10 @@
 require 'rubygems'
 
-gem     'logging',       '>= 1.1.4'
+gem     'logging',       '>= 1.4.1'
 require 'logging'
 
 gem     'cucumber',      '>= 0.3.1'
 require 'cucumber'
 
-gem     'relevance-rcov','>= 0.8.3.4'
+gem     'rcov',          '>= 0.9.8'
 require 'rcov'
