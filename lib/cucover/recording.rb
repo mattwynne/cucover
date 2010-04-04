@@ -6,6 +6,13 @@ module Cucover
       :analyzer,
       :start_time, :end_time)
 
+    IGNORE_PATTERNS = [
+      /gem/,
+      /vendor/,
+      /lib\/ruby/,
+      /cucover/
+    ]
+
     def feature_filename
       file_colon_line.split(':').first
     end
@@ -42,12 +49,7 @@ module Cucover
     end
 
     def boring?(file)
-      [
-        /gem/,
-        /vendor/,
-        /lib\/ruby/
-        #/cucover/
-      ].any? do |expression|
+      IGNORE_PATTERNS.any? do |expression|
         file.match expression
       end
     end
