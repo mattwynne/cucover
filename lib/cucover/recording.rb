@@ -10,7 +10,7 @@ module Cucover
       /gem/,
       /vendor/,
       /lib\/ruby/,
-      /cucover/
+      /cucover\/lib/
     ]
 
     def feature_filename
