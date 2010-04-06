@@ -9,16 +9,16 @@ Feature: Lazy Run Triggered By Rails View Change
     And I have run cucover -- features/see_widgets.feature
 
   Scenario: Change nothing and run cucover again
-    When I run cucover -- features/see_widgets.feature
+    When I run cucover -- -q --format pretty features/see_widgets.feature
     Then it should pass with:
       """
+      Using the default profile...
       Feature: See widgets
 
-        Scenario: See widgets                                  # features/see_widgets.feature:3
-
-      [ Cucover - Skipping clean scenario ]
-          When I go to /widgets                                # features/step_definitions/webrat_steps.rb:1
-          Then I should see "Look at all these lovely widgets" # features/step_definitions/webrat_steps.rb:5
+        Scenario: See widgets
+          When I go to the widgets
+            [ Cucover - Skipping clean scenario ]
+          Then I should see "Look at all these lovely widgets"
 
       1 scenario (1 skipped)
       2 steps (2 skipped)
@@ -27,14 +27,15 @@ Feature: Lazy Run Triggered By Rails View Change
       
   Scenario: Edit a view and run cucover again
     When I edit the source file app/views/widgets/index.html.erb
-    When I run cucover -- features/see_widgets.feature
+    When I run cucover -- -q --format pretty features/see_widgets.feature
     Then it should pass with:
       """
+      Using the default profile...
       Feature: See widgets
 
-        Scenario: See widgets                                  # features/see_widgets.feature:3
-          When I go to /widgets                                # features/step_definitions/webrat_steps.rb:1
-          Then I should see "Look at all these lovely widgets" # features/step_definitions/webrat_steps.rb:5
+        Scenario: See widgets
+          When I go to the widgets
+          Then I should see "Look at all these lovely widgets"
 
       1 scenario (1 passed)
       2 steps (2 passed)
