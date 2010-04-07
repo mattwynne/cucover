@@ -2,6 +2,8 @@ module Cucover
   module CliCommands
     class Cucumber
 
+      LANGUAGE = 'rb'
+
       class << self
         attr_accessor :exit_status
       end
@@ -16,7 +18,7 @@ module Cucover
         require 'cucumber'
 
         step_mother = ::Cucumber::StepMother.new
-        step_mother.load_programming_language('rb')
+        step_mother.load_programming_language(LANGUAGE)
         require 'cucover/cucumber_hooks'
 
         execute_cuke do
