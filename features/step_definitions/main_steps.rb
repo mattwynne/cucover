@@ -34,3 +34,8 @@ Then /^it should (pass|fail) with:$/ do |expected_status, expected_text|
   
   strip_trailing_spaces(strip_duration(@out)).should == expected_text
 end
+
+Then /^I should see "([^\"]*)"$/ do |expected_text|
+  @out.should =~ /#{Regexp.escape(expected_text)}/
+end
+
