@@ -75,11 +75,11 @@ begin
     gemspec.email = "matt@mattwynne.net"
     gemspec.homepage = "http://github.com/mattwynne/cucover/"
     gemspec.description = "Lazy coverage-aware running of Cucumber acceptance tests"
-    gemspec.authors = ["Matt Wynne"]
+    gemspec.authors = ["Matt Wynne", "Joseph Wilk"]
     
-    gemspec.add_dependency('cucumber',        '>= 0.3.11')
-    gemspec.add_dependency('relevance-rcov',  '>= 0.8.3.4')
-    gemspec.add_dependency('logging',         '>= 1.1.4')
+    gemspec.add_dependency('cucumber',        '>= 0.6.4')
+    gemspec.add_dependency('rcov',            '>= 0.9.8')
+    gemspec.add_dependency('logging',         '>= 1.4.1')
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
